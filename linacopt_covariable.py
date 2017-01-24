@@ -32,7 +32,7 @@ class CoVariable(object):
         ----------
         name: string
             Name of the co-variable.
-        var_dep: string/list
+        var_dp: string/list
             Name(s) of the dependent variable(s).
         slope: int/float/list
             Coefficient(s) in calculation.
