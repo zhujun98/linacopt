@@ -1,4 +1,15 @@
 .idea
 *.pyc
+impact_test/*
+!impact_test/ImpactT.in.000
+!impact_test/partcl.data
+astra_test/*
+!astra_test/gun.dat
+!astra_test/Radial500_1G3ps.ini
+!astra_test/injector.in.000
+!astra_test/sole1.dat
+!astra_test/sole2.dat
+!astra_test/sole3dat
+!astra_test/tws_cavity.dat
 win_config.dat
 
