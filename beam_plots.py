@@ -19,11 +19,12 @@ Jun Zhu
 Tested on:
 __________
 Ubuntu 14.04
+Ubuntu 16.04
 
 
 Last modified on:
 __________
-22/01/2017
+24/01/2017
 
 TODO: Include lattice in the line plot.
 """
@@ -59,7 +60,7 @@ class PhaseSpacePlot(PhaseSpace):
     """
     def plot(self, x, y, x_unit=None, y_unit=None, y1_unit=None, colored=True,
              marker_size=2, marker_color='darkgreen', alpha=1.0,
-             bins=500, sigma=5, sample=20000, output_png=False, dpi=300):
+             bins=500, sigma=5, sample=20000, output=None, dpi=300):
         """Plot different phase-spaces
 
         Parameters
@@ -89,8 +90,8 @@ class PhaseSpacePlot(PhaseSpace):
         sample: non-negative int/float
             If sample < 1.0, sample by fraction else sample by count
             (round to integer).
-        output_png: Boolean
-            Output png file of the plot.
+        output: None/string
+            Name of the output file.
         dpi: int
             dpi of the png output.
         """
@@ -108,9 +109,6 @@ class PhaseSpacePlot(PhaseSpace):
             ticker.MaxNLocator(MAX_LOCATOR, symmetric=False))
         ax.yaxis.set_major_locator(
             ticker.MaxNLocator(MAX_LOCATOR, symmetric=False))
-
-        fig_name = os.path.join(os.path.dirname(self.particle_file),
-                                x + '-' + y + '.png')
 
         if x_unit is None:
             x_unit = default_unit(x)
@@ -179,8 +177,9 @@ class PhaseSpacePlot(PhaseSpace):
                       fontsize=TITLE_FONT_SIZE, y=1.02)
 
         plt.tight_layout()
-        if output_png is True:
-            plt.savefig(fig_name, dpi=dpi)
+        if output is not None:
+            plt.savefig(os.path.join(os.path.dirname(self.particle_file),
+                                     output + '.png'), dpi=dpi)
         else:
             plt.show()
 
@@ -253,7 +252,7 @@ class PhaseSpacePlot(PhaseSpace):
 class LinePlot(BeamEvolution):
     """Inherit from BeamEvolution object"""
     def plot(self, names, x_unit=None, y_unit=None, x_lim=None,
-             y_lim=None, lattice_file=None, output_png=False, dpi=300):
+             y_lim=None, lattice_file=None, output=None, dpi=300):
         """Plot the beam parameter evolution along the beamline
 
         Parameters
@@ -266,8 +265,8 @@ class LinePlot(BeamEvolution):
             Data limits for the x axis as [left, right]
         lattice_file: string
             File contains the magnetic lattice layout.
-        output_png: Boolean
-            Output png file of the plot.
+        output: None/string
+            Name of the output file.
         dpi: int
             dpi of the png output.
         """
@@ -339,9 +338,9 @@ class LinePlot(BeamEvolution):
             plt.legend(loc=0, fontsize=LEGEND_FONT_SIZE)
         plt.tight_layout()
 
-        if output_png is True:
+        if output is not None:
             plt.savefig(os.path.join(os.path.dirname(self.root_name),
-                                     '-'.join(names) + '.png'), dpi=dpi)
+                                     output + '.png'), dpi=dpi)
         else:
             plt.show()
 
@@ -475,12 +474,12 @@ if __name__ == "__main__":
     psplot.plot('t', 'x', colored=False, alpha=0.5)
     psplot.plot('t', 'p')
     psplot.plot('x', 'xp', x_unit='um', colored=False)
-    psplot.plot('x', 'xp', x_unit='um', output_png=True)
+    psplot.plot('x', 'xp', x_unit='um', output='x-xp')
 
     # lineplot = LinePlot('test/injector', 'astra')
     lineplot = LinePlot('impact_test/fort', 'impact')
     #
     lineplot.plot('Sz')
-    lineplot.plot(['betax', 'betay'], output_png=True)
+    lineplot.plot(['betax', 'betay'], output='betaxy')
     lineplot.plot(['Sx', 'Sy'])
     lineplot.plot(['Sx', 'Sy'], x_lim=[29.5, 29.6], y_lim=(0, 1))
