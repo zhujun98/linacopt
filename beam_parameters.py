@@ -393,6 +393,12 @@ class PhaseSpace(LinacOptData):
 
         return np.convolve(x, weights, 'same')
 
+    def output_params(self, file_name='params.out'):
+        """Print the beam parameters into a file."""
+        output = os.path.join(os.path.dirname(self.particle_file), file_name)
+        with open(output, 'wb') as f:
+            print >>f, self
+
     def __str__(self):
         """"""
         text = "{:16}    {:16}    {:16}    {:16}\n". \
@@ -524,7 +530,8 @@ if __name__ == "__main__":
     ps_astra.update(current_bins=128, filter_sigma=1)
     print '-'*80 + "\nParameters for {}:\n".format(ps_astra.particle_file)
     print ps_astra
+    ps_astra.output_params()
 
-    ps_impact = PhaseSpace('impact_test/fort.107', 'impact', charge=0.7e-12, cut_tail=0.1)
-    print '-'*80 + "\nParameters for {}:\n".format(ps_impact.particle_file)
-    print ps_impact
+    # ps_impact = PhaseSpace('impact_test/fort.107', 'impact', charge=0.7e-12, cut_tail=0.1)
+    # print '-'*80 + "\nParameters for {}:\n".format(ps_impact.particle_file)
+    # print ps_impact
