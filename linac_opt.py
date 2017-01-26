@@ -567,8 +567,8 @@ class LinacOpt(LinacOptData):
             "{} {}>/dev/null".
             format(self.run_code, self.input_file), shell=True)
 
-        if flag > 0:
-            raise SystemExit("\nSimulation did not start correctly!")
+        # if flag > 0:
+        #     raise SystemExit("\nSimulation did not start correctly!")
 
     def _write_history(self, dt):
         """Save the optimization history to a log file."""
