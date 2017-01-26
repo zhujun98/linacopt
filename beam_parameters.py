@@ -469,12 +469,16 @@ class PhaseSpaceParser(object):
         data['px'] /= M_E * V_LIGHT ** 2 / Q_E
         data['py'] /= M_E * V_LIGHT ** 2 / Q_E
         data['pz'] /= M_E * V_LIGHT ** 2 / Q_E
-        # remove lost particles
-        data = data[data['flag'].isin([3, 5])]
 
+        # ix will first try to act like loc to find the index label.
+        # If the index label is not found, it will add an index label
+        # (new row).
         z_ref = data['z'].iloc[0]
         data.ix[0, 'z'] = 0.0
         data['z'] += z_ref
+
+        # remove lost particles
+        data = data[data['flag'].isin([3, 5])]
 
         data['t'] = \
             1e-9 * data['t'].iloc[0] - (data['z'] - data['z'].mean()) \
