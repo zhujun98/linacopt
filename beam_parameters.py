@@ -28,7 +28,7 @@ Ubuntu 16.04
 History:
 ________
 
-Last modified on 23/01/2017
+Last modified on 01/02/2017
 
 """
 import os
@@ -472,7 +472,9 @@ class PhaseSpaceParser(object):
 
         # ix will first try to act like loc to find the index label.
         # If the index label is not found, it will add an index label
-        # (new row).
+        # (new row). Therefore, the reference particle must be used
+        # before removing lost particles since the reference particle
+        # could be removed.
         z_ref = data['z'].iloc[0]
         data.ix[0, 'z'] = 0.0
         data['z'] += z_ref
@@ -480,13 +482,15 @@ class PhaseSpaceParser(object):
         # remove lost particles
         data = data[data['flag'].isin([3, 5])]
 
-        data['t'] = \
-            1e-9 * data['t'].iloc[0] - (data['z'] - data['z'].mean()) \
-            / (V_LIGHT * data['pz'] / np.sqrt(data['pz'] ** 2 + 1))
-
-        data['t'] = data['t'] - data['t'].mean()
-
         data['p'] = np.sqrt(data['px'] ** 2 + data['py'] ** 2 + data['pz'] ** 2)
+
+        # At this step, the timing can be used for timing jitter study.
+        data['t'] = data['t'].iloc[0]/1e9 - (data['z'] - z_ref)\
+            /(V_LIGHT * data['pz']/np.sqrt(data['p']**2 + 1))
+
+        # The bunch is centered for the convenience of the longitudinal
+        # phase-space plot.
+        data['t'] = data['t'] - data['t'].mean()
 
         charge = -1e-9 * data['charge'].sum()
 
@@ -536,6 +540,6 @@ if __name__ == "__main__":
     print ps_astra
     ps_astra.output_params()
 
-    # ps_impact = PhaseSpace('impact_test/fort.107', 'impact', charge=0.7e-12, cut_tail=0.1)
-    # print '-'*80 + "\nParameters for {}:\n".format(ps_impact.particle_file)
-    # print ps_impact
+    ps_impact = PhaseSpace('impact_test/fort.107', 'impact', charge=0.7e-12, cut_tail=0.1)
+    print '-'*80 + "\nParameters for {}:\n".format(ps_impact.particle_file)
+    print ps_impact
