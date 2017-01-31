@@ -534,12 +534,13 @@ class PhaseSpaceParser(object):
 
 if __name__ == "__main__":
     # Test
-    ps_astra = PhaseSpace('astra_test/injector.0600.001', 'astra')
+    ps_astra = PhaseSpace('examples/astra_basic/injector.0600.001', 'astra')
     ps_astra.update(current_bins=128, filter_sigma=1)
     print '-'*80 + "\nParameters for {}:\n".format(ps_astra.particle_file)
     print ps_astra
     ps_astra.output_params()
 
-    ps_impact = PhaseSpace('impact_test/fort.107', 'impact', charge=0.7e-12, cut_tail=0.1)
+    ps_impact = PhaseSpace('examples/impact_basic/fort.107', 'impact',
+                           charge=0.7e-12, cut_tail=0.1)
     print '-'*80 + "\nParameters for {}:\n".format(ps_impact.particle_file)
     print ps_impact

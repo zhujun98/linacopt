@@ -26,7 +26,9 @@ Last modified on:
 __________
 24/01/2017
 
-TODO: Include lattice in the line plot.
+TODO:
+- Include lattice in the line plot.
+- matplotlib.rcParams in different systems.
 """
 import os
 import re
@@ -103,7 +105,7 @@ class PhaseSpacePlot(PhaseSpace):
         if phasespace is None:
             raise ValueError("NoneType phase-space data!")
 
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(8, 6))
         ax.margins(AX_MARGIN)
         ax.xaxis.set_major_locator(
             ticker.MaxNLocator(MAX_LOCATOR, symmetric=False))
@@ -470,7 +472,7 @@ def unit_scale(unit):
 if __name__ == "__main__":
     # Test
     # psplot = PhaseSpacePlot('test/injector.0600.001', 'astra')
-    psplot = PhaseSpacePlot('impact_test/fort.107', 'impact', 0.7e-12, cut_tail=0.1)
+    psplot = PhaseSpacePlot('examples/impact_basic/fort.107', 'impact', 0.7e-12, cut_tail=0.1)
 
     print psplot
     psplot.plot('t', 'x', colored=False, alpha=0.5)
@@ -479,7 +481,7 @@ if __name__ == "__main__":
     psplot.plot('x', 'xp', x_unit='um', output='x-xp')
 
     # lineplot = LinePlot('test/injector', 'astra')
-    lineplot = LinePlot('impact_test/fort', 'impact')
+    lineplot = LinePlot('examples/impact_basic/fort', 'impact')
     #
     lineplot.plot('Sz')
     lineplot.plot(['betax', 'betay'], output='betaxy')

@@ -31,7 +31,7 @@ Developer:
 __________
 Jun Zhu
 
-Last modified on 22/01/2017
+Last modified on 01/02/2017
 
 """
 import os
@@ -426,10 +426,10 @@ class Stats(object):
 
 if __name__ == "__main__":
     # Test
-    ld_astra = BeamEvolution('astra_test/injector', 'astra', z_lim=(4, 6))
+    ld_astra = BeamEvolution('examples/astra_basic/injector', 'astra', z_lim=(4, 6))
     print '-'*80 + "\nParameters for test ASTRA files"
     print ld_astra
 
-    ld_impact = BeamEvolution('impact_test/fort', 'impact')
+    ld_impact = BeamEvolution('examples/impact_basic/fort', 'impact')
     print '-'*80 + "\nParameters for test IMPACT files"
     print ld_impact
