@@ -111,6 +111,10 @@ class LinacOpt(LinacOptData):
         None for new run and int for restarting from the restart-th run.
     _run_once: Boolean
         True for stopping after one simulation. For debug.
+    run_code: string
+        String that can run the code in the shell.
+    max_duration: None/float/int
+        Maximum allowed run time (in s) of one simulation.
     """
     def __init__(self, path_name=None, input_file=None, input_template=None,
                  particle_type=None, prob_name='opt_prob',
@@ -153,6 +157,7 @@ class LinacOpt(LinacOptData):
         self.solution_file = None
 
         self.run_code = None
+        self.max_duration = None
 
         self._time_consumption = 0.0
         self._n_iter = 0
@@ -230,13 +235,15 @@ class LinacOpt(LinacOptData):
         """
         self.optimizer = name
 
-    def solve(self, run_code=None):
+    def solve(self, run_code=None, max_duration=None):
         """Run the optimization and print the result.
 
         Parameters
         ----------
         run_code: string
             String that can run the code in the shell.
+        max_duration: None/float/int
+            Maximum allowed run time (in s) of one simulation.
         """
         # Continuous run
         # Read the optimized variable set from the .pkl file
@@ -252,6 +259,7 @@ class LinacOpt(LinacOptData):
             self.opt_prob._objectives = last_sol[4]
             self.opt_prob._constraints = last_sol[5]
             self.run_code = last_sol[6]
+            self.max_duration = last_sol[7]
 
             print("\n" + "*"*80 + "\n" + "Read the solution set from {}\n".
                   format(pickle_file) + "*"*80 + "\n")
@@ -271,6 +279,8 @@ class LinacOpt(LinacOptData):
 
         if run_code is not None:
             self.run_code = run_code
+        if max_duration is not None:
+            self.max_duration = max_duration
 
         self.log_file = self._prob_name + '.log.{:03d}'.format(self._n_restart)
         self.solution_file = self._prob_name + '.sol.{:03d}'.format(self._n_restart)
@@ -304,7 +314,8 @@ class LinacOpt(LinacOptData):
                     self.opt_prob.get_staticvarset(),
                     self.opt_prob.get_objset(),
                     self.opt_prob.get_conset(),
-                    self.run_code]
+                    self.run_code,
+                    self.max_duration]
         with open(self._prob_name + '.sol.{:03d}.pkl'.format(self._n_restart), 'wb') as fp:
             pickle.dump(last_sol, fp)
 
@@ -559,16 +570,14 @@ class LinacOpt(LinacOptData):
 
     def _run_simulation(self):
         """Run the simulation."""
-        # Once the particle_file is not found, the run will be
-        # regarded as a failure
         self._remove_output_files()
 
-        flag = subprocess.call(
-            "{} {}>/dev/null".
-            format(self.run_code, self.input_file), shell=True)
-
-        # if flag > 0:
-        #     raise SystemExit("\nSimulation did not start correctly!")
+        if self.max_duration is None:
+            subprocess.call("{} {}>/dev/null".format(
+                self.run_code, self.input_file), shell=True)
+        else:
+            subprocess.call("timeout {}s {} {}>/dev/null".format(
+                self.max_duration, self.run_code, self.input_file), shell=True)
 
     def _write_history(self, dt):
         """Save the optimization history to a log file."""
