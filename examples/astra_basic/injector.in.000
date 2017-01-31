@@ -3,14 +3,14 @@
     Head='test for linac optimization'
     RUN = 1
     Distribution = 'Radial500_1G3ps.ini'
-    Qbunch = .010
+    Qbunch = 0.02 
     XYrms = <laser_spot>
-    Trms = 0.0003
+    Trms = 0.003 
     TRACK_ALL = .T 
     PHASE_SCAN = .F
     AUTO_PHASE = .T
-    H_max = <hmax>
-    H_min = <hmin>
+    H_max = 0.010 
+    H_min = 0.00010 
     Max_step = 10000000
     debunch = 0.0
     Z_Cathode = 0.0
@@ -45,20 +45,12 @@
     Max_scale = 0.1
     Max_Count = 100
     Exp_Control = 0.1
-    Nrad = <nrad>
-    Nlong_in = <nlong>
+    Nrad = 16
+    Nlong_in = 16
     Lmirror = .F
     Cell_var = 2.0
     min_grid = 0.0  
     N_min = 30.0  
-/
-
-&APERTURE 
-    LApert = .T 
-    File_Aperture=Scr_X
-    AP_Z1(1) = 0.285
-    AP_Z2(1) = 0.295
-    AP_R(1) = 2.6 ! this is in mm
 /
 
 &CAVITY 
@@ -67,17 +59,17 @@
     
     File_Efield(1) = 'gun.dat', Nue(1) = 2.998, C_pos(1) = 0.0 
     C_smooth(1) = 10, C_higher_order(1) = .T
-    MaxE(1) = 110.00, Phi(1) = 0.00
+    MaxE(1) = 110.00, Phi(1) = 0.0 
    
     File_Efield(2) = 'tws_cavity.dat', Nue(2) = 2.998, C_pos(2) = 1.5
     C_numb(2) = 60, C_smooth(2) = 10
     MaxE(2) = 30.0
-    Phi(2) = <tws1_phase>  ! <tws1_phase>
+    Phi(2) = 0.0 
 
     File_Efield(3) = 'tws_cavity.dat', Nue(3) = 2.998, C_pos(3) = 3.7
     C_numb(3) = 60, C_smooth(3) = 10
     MaxE(3) = 30.0
-    Phi(3) = <tws2_phase>
+    Phi(3) = 0.0
 /
  
 &SOLENOID
@@ -95,16 +87,8 @@
     FILE_BFieLD(3) = 'sole3.dat', S_pos(3) = 1.5
     S_smooth(3) = 10
     MaxB(3) = <tws1_sole_b> 
-    
-    FILE_BFieLD(4) = 'sole3.dat', S_pos(4) = 2.5
+
+    FILE_BFieLD(4) = 'sole3.dat', S_pos(4) = 3.7
     S_smooth(4) = 10
     MaxB(4) = <tws1_sole_b> 
-    
-    FILE_BFieLD(5) = 'sole3.dat', S_pos(5) = 3.7
-    S_smooth(5) = 10
-    MaxB(5) = <tws2_sole_b>
-    
-    FILE_BFieLD(6) = 'sole3.dat', S_pos(6) = 4.7
-    S_smooth(6) = 10
-    MaxB(6) = <tws2_sole_b>
 /

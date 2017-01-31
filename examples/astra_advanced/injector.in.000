@@ -1,0 +1,102 @@
+&NEWRUN 
+    Version = 3
+    Head='test for linac optimization'
+    RUN = 1
+    Distribution = 'Radial500_1G3ps.ini'
+    Qbunch = <charge> 
+    XYrms = <laser_spot>
+    Trms = <laser_duration> 
+    TRACK_ALL = .T 
+    PHASE_SCAN = .F
+    AUTO_PHASE = .T
+    H_max = <hmax>
+    H_min = <hmin>
+    Max_step = 10000000
+    debunch = 0.0
+    Z_Cathode = 0.0
+/
+ 
+&OUTPUT
+    ZSTART = 0.0 
+    ZSTOP = 6.0
+    Zemit = 500
+    Zphase = 1 
+    High_res = .T
+    Local_emit = .F
+    Lproject_emit = .F
+    TR_EmitS = .T
+    EmitS = .T
+    C_Emits = .F  
+    PhaseS = .T
+    RefS = .F
+    TrackS = .F  
+    TcheckS = .F
+    CathodeS = .F
+    LANDFS  = .F
+    Lsub_rot = .F  
+    Lsub_cor = .F
+    Lmagnetized = .F
+
+    Screen(1) = 0.29
+/
+
+&CHARGE 
+    LSPCH = .F
+    Max_scale = 0.1
+    Max_Count = 100
+    Exp_Control = 0.1
+    Nrad = <nrad>
+    Nlong_in = <nlong>
+    Lmirror = .F
+    Cell_var = 2.0
+    min_grid = 0.0  
+    N_min = 30.0  
+/
+
+&APERTURE 
+    LApert = .T 
+    File_Aperture=Scr_X
+    AP_Z1(1) = 0.285
+    AP_Z2(1) = 0.295
+    AP_R(1) = 2.6 ! this is in mm
+/
+
+&CAVITY 
+    Loop = .F 
+    LEfield = .T
+    
+    File_Efield(1) = 'gun.dat', Nue(1) = 2.998, C_pos(1) = 0.0 
+    C_smooth(1) = 10, C_higher_order(1) = .T
+    MaxE(1) = 110.00, Phi(1) = <gun_phase>
+   
+    File_Efield(2) = 'tws_cavity.dat', Nue(2) = 2.998, C_pos(2) = 1.5
+    C_numb(2) = 60, C_smooth(2) = 10
+    MaxE(2) = 30.0
+    Phi(2) = <tws1_phase>  ! <tws1_phase>
+
+    File_Efield(3) = 'tws_cavity.dat', Nue(3) = 2.998, C_pos(3) = 3.7
+    C_numb(3) = 60, C_smooth(3) = 10
+    MaxE(3) = 30.0
+    Phi(3) = <tws2_phase>  ! <tws2_phase>
+/
+ 
+&SOLENOID
+    Loop = .F 
+    LBfield = .T
+    
+    File_Bfield(1) = 'sole1.dat', S_pos(1) = 0.144
+    S_smooth(1) = 5  
+    MaxB(1) = <hc_sole_b>
+    
+    File_Bfield(2) = 'sole2.dat', S_pos(2) = 0.456
+    S_smooth(2) = 5 
+    MaxB(2) = <main_sole_b>
+    
+    FILE_BFieLD(3) = 'sole3.dat', S_pos(3) = 1.5
+    S_smooth(3) = 10
+    MaxB(3) = <tws1_sole_b> 
+
+    FILE_BFieLD(4) = 'sole3.dat', S_pos(4) = 3.7
+    S_smooth(4) = 10
+    MaxB(4) = <tws1_sole_b> 
+/

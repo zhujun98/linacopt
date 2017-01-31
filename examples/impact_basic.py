@@ -3,8 +3,7 @@
 """
 impact_test.py - A PYTHON script for beam matching optimization.
 
-This example is only to illustrate how to set up the optimizer with
-Impact-T. It will not find the optimized solution.
+The optimization can bring down the mismatch factor from 1.41 to 1.17.
 """
 
 import numpy as np
@@ -16,32 +15,25 @@ from linac_opt import LinacOpt
 
 # -----------------------
 # Instantiate the problem
-
-matchin_opt = LinacOpt(path_name='impact_test/',
+matchin_opt = LinacOpt(path_name='impact_basic/',
                        input_file='ImpactT.in',
                        input_template='ImpactT.in.000',
                        particle_type='impact',
-                       prob_name='matchin_opt',
-                       restart=None,
-                       run_once=False
-                       )
+                       prob_name='matchin_opt')
 
-# --------------------------------
-# Set parameters for the optimizer
-
+# -----------------
+# Set the optimizer
 matchin_opt.set_optimizer('sdpen')
-
 matchin_opt.optimizer.setOption('alfa_stop', 1e-3)
-matchin_opt.optimizer.setOption('nf_max', 100)
+matchin_opt.optimizer.setOption('iprint', 0)
+matchin_opt.optimizer.setOption('nf_max', 10000)
 
 # --------------
 # Add fit points
-
-matchin_opt.fit_points.set_point('out', 'fort.107', q_norm=9.946e-17, cut_tail=0.1)
+matchin_opt.fit_points.set_point('out', 'fort.107', q_norm=9.946e-17)
 
 # -------------
 # Add objective
-
 def f1(fits):
     """Calculate the average mismatch factor."""
     mbetax = 0.04
@@ -67,8 +59,8 @@ def f1(fits):
     emitx = fits.out.emitx
     emity = fits.out.emity
     St = fits.out.St
-    print("{:10.4f} {:10.4f} {:10.4f} {:10.4f} {:10.4f} {:10.4f} {:10.4f}".
-          format(betax, alphax, betay, alphay, 1.0e6*emitx, 1.0e6*emity, 1.0e15*St))
+    print("{:10.4f} {:10.4f} {:10.4f} {:10.4f} {:10.4f} {:10.4f} {:10.4f} {:10.4f}".
+          format((mx + my)/2, betax, alphax, betay, alphay, 1.0e6*emitx, 1.0e6*emity, 1.0e15*St))
 
     return (mx + my)/2
 
@@ -76,28 +68,27 @@ matchin_opt.opt_prob.set_obj('mismatch', func=f1)
 
 # --------------
 # Add constraint
-
 def g1(fits):
-    print fits.out.I_peak
     return fits.out.I_peak
-
 matchin_opt.opt_prob.set_con('I_peak(A)', func=g1, lower=500)
+
+def g2(fits):
+    return fits.out.emitx*1e6
+matchin_opt.opt_prob.set_con('emitx_um', func=g2, upper=1.0)
 
 # ------------------------------------------------
 # Add variables, co-variables and static-variables
-
-matchin_opt.opt_prob.set_var('MQZM1_G', value=0.0, lower=-12.0, upper=12.0)
-matchin_opt.opt_prob.set_var('MQZM2_G', value=0.0, lower=-12.0, upper=12.0)
-matchin_opt.opt_prob.set_var('MQZM3_G', value=0.0, lower=-12.0, upper=12.0)
-matchin_opt.opt_prob.set_var('MQZM4_G', value=0.0, lower=-12.0, upper=12.0)
-matchin_opt.opt_prob.set_var('MQZM5_G', value=0.0, lower=-12.0, upper=12.0)
-matchin_opt.opt_prob.set_var('MQZM6_G', value=0.0, lower=-12.0, upper=12.0)
+matchin_opt.opt_prob.set_var('MQZM1_G', value= 0.5582, lower=-12.0, upper=12.0)
+matchin_opt.opt_prob.set_var('MQZM2_G', value=-0.8456, lower=-12.0, upper=12.0)
+matchin_opt.opt_prob.set_var('MQZM3_G', value= 0.4746, lower=-12.0, upper=12.0)
+matchin_opt.opt_prob.set_var('MQZM4_G', value= 2.7909, lower=-12.0, upper=12.0)
+matchin_opt.opt_prob.set_var('MQZM5_G', value=-5.2743, lower=-12.0, upper=12.0)
+matchin_opt.opt_prob.set_var('MQZM6_G', value= 4.4487, lower=-12.0, upper=12.0)
 
 matchin_opt.opt_prob.set_staticvar('n_col', 2)
 matchin_opt.opt_prob.set_staticvar('n_row', 1)
 
 # --------------------
 # Run the optimization
-
+# matchin_opt.solve('ImpactTv1.7linux')
 matchin_opt.solve('mpirun -np 2 ImpactTv1.7linuxPara')
-
