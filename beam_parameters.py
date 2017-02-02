@@ -54,17 +54,35 @@ class PhaseSpace(LinacOptData):
     data: pandas.DataFrame object
         Columns: x (m), y (m), z (m), px, py, t (s, dt), p (mc)
 
+    particle_file: string
+        Name of the particle file.
+    particle_type: string
+        Type of the particle file.
+    _min_pars: int
+        Minimum allowed number of particles in the data. The beam
+        parameters will not be calculated if the number of particles
+        is below this value.
+
     slice_percent: float
         Percentage of particle for slice parameters calculation.
     cut_halo: None/float
         Percentage of halo to be cut.
     cut_tail: None/float
         Percentage of tail to be cut.
+    current_bins: int/'auto'
+        No. of bins to calculate the current profile.
+    filter_size: int/float
+        Standard deviation of the Gaussian kernel of the 1D Gaussian
+        filter used for current profile calculation.
 
     n0: int
         Number of particles in the original file.
     n: int
-        Number of particles.
+        Number of particles after applying cut_halo and/or cut_tail.
+    charge: int/float
+        Charge (C) of the beam after applying cut_halo and/or cut_tail.
+    q_norm: int/float/None
+        Charge per macro-particle. Only for Impact data.
     p: float
         Average normalized momentum.
     gamma: float
@@ -104,8 +122,9 @@ class PhaseSpace(LinacOptData):
     Ct: float
         Average timing (s).
     """
-    def __init__(self, particle_file, particle_type, charge=0.0, q_norm=None,
-                 slice_percent=0.1, cut_halo=None, cut_tail=None, opt=False):
+    def __init__(self, particle_file, particle_type, charge=None, q_norm=None,
+                 slice_percent=0.1, cut_halo=None, cut_tail=None,
+                 current_bins='auto', filter_size=1, min_pars=5, opt=False):
         """
         Parameters
         ----------
@@ -116,8 +135,8 @@ class PhaseSpace(LinacOptData):
         charge: int/float
             Charge of the beam (in C). Only for Impact data.
             Ignored if q_norm is given.
-        q_norm: int/float
-            Charge per macro-particle.
+        q_norm: int/float/None
+            Charge per macro-particle. Only for Impact data.
         slice_percent: float
             Percentage of particles for slice properties.
         cut_halo: None/float
@@ -126,12 +145,20 @@ class PhaseSpace(LinacOptData):
         cut_tail: None/float
             Percentage of particles to be removed based on their
             longitudinal distance to the bunch centroid.
+        current_bins: int/'auto'
+            No. of bins to calculate the current profile.
+        filter_size: int/float
+            Standard deviation of the Gaussian kernel of the 1D Gaussian
+            filter used for current profile calculation.
+        min_pars: int
+            Minimum allowed number of particles in the data.
         opt: Boolean
             True for the initialization of the fit-points in linac_opt.
             Since there is no output, an error will occur if the update
             method is called. Default is False.
         """
         self.particle_file = os.path.join(os.getcwd(), particle_file)
+        self._min_pars = min_pars
 
         super(PhaseSpace, self).__init__(particle_type)
 
@@ -139,9 +166,12 @@ class PhaseSpace(LinacOptData):
         self.q_norm = q_norm
         self.current_dist = None
 
-        if slice_percent > 1.0 or slice_percent <= 0.0:
-            slice_percent = 0.10
-        self.slice_percent = slice_percent
+        if type(slice_percent) in (int, float) and 0.0 < slice_percent < 1.0:
+            self.slice_percent = slice_percent
+        else:
+            self.slice_percent = 0.1
+        self.current_bins = current_bins
+        self.filter_size = filter_size
 
         self.cut_halo = cut_halo
         self.cut_tail = cut_tail
@@ -185,20 +215,10 @@ class PhaseSpace(LinacOptData):
         if not opt:
             self.update()
 
-    def update(self, current_bins='auto', filter_sigma=1):
-        """Read the phase-space and calculate the beam parameters
-
-        Parameters
-        ----------
-        current_bins: int/'auto'
-            No. of bins to calculate the current profile. Only affect
-            the calculation of the peak current.
-        filter_sigma: int/float
-            Standard deviation of the Gaussian kernel of the 1D Gaussian filter.
-        """
+    def update(self):
+        """Read the phase-space and calculate the beam parameters"""
         self.data = None
         parser = PhaseSpaceParser()
-
         if self.particle_type == 'astra':
             self.data, self.charge = parser.astra_parser(self.particle_file)
         elif self.particle_type == 'impact':
@@ -207,8 +227,11 @@ class PhaseSpace(LinacOptData):
         self.n0 = len(self.data)
         self.n = self.n0
 
-        if self.particle_type == 'impact' and type(self.q_norm) in [float, int]:
-            self.charge = self.q_norm*self.n0
+        if self.particle_type == 'impact':
+            if type(self.q_norm) in [float, int]:
+                self.charge = self.q_norm*self.n0
+            if self.charge is None:
+                self.charge = 0.0
 
         # Cut the halo of the bunch
         if isinstance(self.cut_halo, float) and 0.0 < self.cut_halo < 1.0:
@@ -230,6 +253,12 @@ class PhaseSpace(LinacOptData):
                 self.data['t'].abs().sort_values(ascending=True).index)
             self.data = self.data[:self.n]
 
+        # Too few particles may cause error during the following
+        # calculation, e.g. negative value in sqrt.
+        if self.n < self._min_pars:
+            raise ValueError("Too few particles ({}) in the data!".
+                             format(self.n))
+
         pz = np.sqrt(self.data['p']**2 - self.data['px']**2 - self.data['py']**2)
 
         p_ave = self.data['p'].mean()
@@ -247,11 +276,11 @@ class PhaseSpace(LinacOptData):
         # the plot function. If it is included in the plot function, the
         # printout parameters might differ from the plot, which could
         # cause confusion.
-        counts, edges = np.histogram(self.data['t'], bins=current_bins)
+        counts, edges = np.histogram(self.data['t'], bins=self.current_bins)
         step_size = edges[1] - edges[0]
         centers = edges[:-1] + step_size / 2
         current = counts / float(len(self.data)) * self.charge / step_size
-        current = self.gaussian_filter1d(current, sigma=filter_sigma)
+        current = self.gaussian_filter1d(current, sigma=self.filter_size)
         self.I_peak = current.max()
         self.current_dist = [centers, current]
 
@@ -275,14 +304,15 @@ class PhaseSpace(LinacOptData):
         sorted_data = self.data.reindex(
             self.data['t'].abs().sort_values(ascending=True).index)
         n_slice = int(len(sorted_data) * self.slice_percent)
+        if n_slice < self._min_pars:
+            raise ValueError("Too few particles ({})in the slice data!".
+                             format(n_slice))
+
         slice_data = sorted_data.iloc[:n_slice]
 
         self.emitx_slice = self._canonical_emit(slice_data.x, slice_data.px)
-
         self.emity_slice = self._canonical_emit(slice_data.y, slice_data.py)
-
         self.Sdelta_slice = slice_data.p.std(ddof=0) / slice_data.p.mean()
-
         self.St_slice = sorted_data.iloc[:n_slice].t.std(ddof=0)
 
         # The output will be different from the output by msddsplot
@@ -539,12 +569,14 @@ class PhaseSpaceParser(object):
 if __name__ == "__main__":
     # Test
     ps_astra = PhaseSpace('examples/astra_basic/injector.0600.001', 'astra')
-    ps_astra.update(current_bins=128, filter_sigma=1)
     print '-'*80 + "\nParameters for {}:\n".format(ps_astra.particle_file)
     print ps_astra
     ps_astra.output_params()
 
     ps_impact = PhaseSpace('examples/impact_basic/fort.107', 'impact',
-                           charge=0.7e-12, cut_tail=0.1)
+                           charge=0.7e-12, q_norm=None, cut_tail=0.1,
+                           cut_halo=0.1, current_bins=128, filter_size=2,
+                           slice_percent=0.05, min_pars=10)
+    ps_impact.update()
     print '-'*80 + "\nParameters for {}:\n".format(ps_impact.particle_file)
     print ps_impact
