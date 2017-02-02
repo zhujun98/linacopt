@@ -243,6 +243,10 @@ class PhaseSpace(LinacOptData):
         self.St = self.data['t'].std(ddof=0)
         self.Sz = self.data['z'].std(ddof=0)
 
+        # The current profile calculation is included here but not in
+        # the plot function. If it is included in the plot function, the
+        # printout parameters might differ from the plot, which could
+        # cause confusion.
         counts, edges = np.histogram(self.data['t'], bins=current_bins)
         step_size = edges[1] - edges[0]
         centers = edges[:-1] + step_size / 2
