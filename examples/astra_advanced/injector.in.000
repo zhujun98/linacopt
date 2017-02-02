@@ -3,9 +3,9 @@
     Head='test for linac optimization'
     RUN = 1
     Distribution = 'Radial500_1G3ps.ini'
-    Qbunch = <charge> 
+    Qbunch = <charge>
     XYrms = <laser_spot>
-    Trms = <laser_duration> 
+    Trms = <laser_duration>
     TRACK_ALL = .T 
     PHASE_SCAN = .F
     AUTO_PHASE = .T

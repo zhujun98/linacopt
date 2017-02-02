@@ -1,8 +1,13 @@
 #!/usr/bin/python
 """
-astra_test.py - A PYTHON script for photoinjector optimization.
+This example shows how to optimize the bunch length and emittance in
+ASTRA using the velocity-bunching scheme. The global optimizer ALPSO
+is used in the first step and the local search optimizer SDPEN is used
+in the second one. Space-charge is switched off for speed.
 
-Space-charge is switched off for speed.
+Several advanced setups are also shown here.
+
+The optimized result is 0.51 fs and 0.099 um.
 """
 import sys
 import os
@@ -21,24 +26,27 @@ from linac_opt import LinacOpt
 
 # ----------------------------
 # Instantiate the optimization
+# By setting restart to 1, the optimizer will try to read the saved
+# result of the first step and directly start the second one.
 opt_test = LinacOpt(path_name='./astra_advanced',
                     input_file='injector.in',
                     input_template='injector.in.000',
                     particle_type='astra',
                     prob_name='opt_test',
-                    restart=None)
+                    restart=None,
+                    run_once=False)
 
 # ---------------------------------------------
 # Set up the optimizer
 opt_test.set_optimizer('alpso')
 
-opt_test.optimizer.setOption('atol', 1e-1)
+opt_test.optimizer.setOption('atol', 1e-2)
 opt_test.optimizer.setOption('rtol', 1e-2)
-opt_test.optimizer.setOption('SwarmSize', 40)  
+opt_test.optimizer.setOption('SwarmSize', 80)
 opt_test.optimizer.setOption('maxInnerIter', 3)  
 opt_test.optimizer.setOption('minInnerIter', 1)
 opt_test.optimizer.setOption('dynInnerIter', 1)
-opt_test.optimizer.setOption('stopIters', 3)
+opt_test.optimizer.setOption('stopIters', 5)
 opt_test.optimizer.setOption('w1', 0.99)
 opt_test.optimizer.setOption('w2', 0.40)
 opt_test.optimizer.setOption('c1', 2.0)
@@ -46,13 +54,14 @@ opt_test.optimizer.setOption('c2', 2.0)
 
 # --------------
 # Add fit points
-opt_test.fit_points.set_point('out', 'injector.0600.001', cut_tail=0.1)
-opt_test.fit_points.set_point('slit', 'injector.0029.001', cut_halo=0.1)
+opt_test.fit_points.set_point('out', 'injector.0600.001')
+opt_test.fit_points.set_point('slit', 'injector.0029.001',
+                              cut_tail=0.1, cut_halo=0.1)
 
 # ------------
 # Add sections
-# opt_test.sections.set_section('all')
-# opt_test.sections.set_section('tws2', z_lim=(3.7, 5.7))
+opt_test.sections.set_section('all')
+opt_test.sections.set_section('tws2', z_lim=(3.7, 5.7))
 
 # -------------
 # Add objective
@@ -63,21 +72,21 @@ opt_test.opt_prob.set_obj('St_fs', f1)
 
 # ---------------
 # Add constraints
-# def g1(fits):
-#     return (fits.out.emitx + fits.out.emity)/2*1e6
-# opt_test.opt_prob.set_con('emitxy_um', g1, upper=0.20)
-#
-# def g2(fits):
-#     return fits.slit.Sx*1.e3
-# opt_test.opt_prob.set_con('Sx_at_slit_mm', g2, upper=2.0)
-#
-# def g3(fits, sections):
-#     return (sections.all.Sx.max + sections.tws2.Sy.max)/2*1.e3
-# opt_test.opt_prob.set_con('max_Sxy_mm', g3, upper=10.0)
-#
-# def g4(fits, sections):
-#     return (sections.tws2.betax.ave + sections.tws2.betay.ave)/2
-# opt_test.opt_prob.set_con('ave_betaxy_TWS2_m', g4, equal=20.0, tol=10.0)
+def g1(fits):
+    return (fits.out.emitx + fits.out.emity)/2*1e6
+opt_test.opt_prob.set_con('emitxy_um', g1, upper=0.30)
+
+def g2(fits):
+    return fits.slit.Sx*1.e3
+opt_test.opt_prob.set_con('Sx_at_slit_mm', g2, upper=2.0)
+
+def g3(fits, sections):
+    return (sections.all.Sx.max + sections.tws2.Sy.max)/2*1.e3
+opt_test.opt_prob.set_con('max_Sxy_mm', g3, upper=10.0)
+
+def g4(fits, sections):
+    return (sections.tws2.betax.ave + sections.tws2.betay.ave)/2
+opt_test.opt_prob.set_con('ave_betaxy_TWS2_m', g4, equal=30.0, tol=20.0)
 
 # ------------------------------------------------
 # Add variables, co-variables and static-variables
@@ -103,8 +112,8 @@ opt_test.opt_prob.set_staticvar('nlong', 32)
 # ASTRA will be killed after 10 seconds. However, the optimization
 # will continue. Both the shell command and the max_duration will
 # be inherited by the following optimizations.
-opt_test.solve('astra', max_duration=10)
-# opt_test.solve('mpirun -np 2 astra_r62_Linux_x86_64_OpenMPI_1.6.1')
+# opt_test.solve('astra', max_duration=10)
+opt_test.solve('mpirun -np 2 astra_r62_Linux_x86_64_OpenMPI_1.6.1')
 
 # *********************************************************************
 # ******************************Step 2*********************************

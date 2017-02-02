@@ -1,8 +1,7 @@
 #!/usr/bin/python
 """
-astra_basic.py - A PYTHON script for photoinjector optimization.
-
-Space-charge is switched off for speed. The optimized emittance is 0.99 um.
+This is a basic example showing how to optimize the emittance in ASTRA
+with a local search optimizer. Space-charge is switched off for speed.
 """
 import sys
 import os

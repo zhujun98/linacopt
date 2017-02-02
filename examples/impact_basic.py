@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
 """
-impact_test.py - A PYTHON script for beam matching optimization.
-
-The optimization can bring down the mismatch factor from 1.41 to 1.17.
+This is a basic example showing how to optimize the mismatch factor
+in IMPACT-T with a local search optimizer. The optimization can bring
+down the mismatch factor from 1.41 to 1.17.
 """
 
 import numpy as np
