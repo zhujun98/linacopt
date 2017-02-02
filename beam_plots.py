@@ -60,9 +60,9 @@ class PhaseSpacePlot(PhaseSpace):
     The purpose of creating another class is that people do not have to
     install matplotlib for the optimizer.
     """
-    def plot(self, x, y, x_unit=None, y_unit=None, y1_unit=None, colored=True,
-             marker_size=2, marker_color='darkgreen', alpha=1.0,
-             bins=500, sigma=5, sample=20000, output='', dpi=300):
+    def plot(self, x, y, x_unit=None, y_unit=None, y1_unit=None, density_plot=True,
+             marker_size=2, marker_color='dodgerblue', alpha=1.0,
+             bins_2d=500, sigma_2d=5, sample=20000, output='', dpi=300):
         """Plot different phase-spaces
 
         Parameters
@@ -77,7 +77,7 @@ class PhaseSpacePlot(PhaseSpace):
             Units of y1 axes.
         y1_unit: string
             Units of y1 axes.
-        colored: Boolean
+        density_plot: Boolean
             True for colorful density plot.
         marker_size: int
             Size of the point in the scatter plot.
@@ -85,9 +85,9 @@ class PhaseSpacePlot(PhaseSpace):
             Color of markers for non-density plot.
         alpha: float, [0, 1]
             Alpha value (transparency).
-        bins: int or [int, int]
+        bins_2d: int or [int, int]
             No. of bins used in numpy.histogram2d.
-        sigma: int/float
+        sigma_2d: int/float
             Standard deviation of Gaussian kernel of the Gaussian filter.
         sample: non-negative int/float
             If sample < 1.0, sample by fraction else sample by count
@@ -122,7 +122,7 @@ class PhaseSpacePlot(PhaseSpace):
 
         x_sample, y_sample, density_color, i_sample = \
             self.sample_data(phasespace[self.get_column(x)], phasespace[self.get_column(y)],
-                             bins=bins, sigma=sigma, sample=sample)
+                             bins=bins_2d, sigma=sigma_2d, sample=sample)
 
         pz = np.sqrt(phasespace.p**2 - phasespace.px**2 - phasespace.py**2)
 
@@ -131,7 +131,7 @@ class PhaseSpacePlot(PhaseSpace):
         if y in ['xp', 'yp']:
             y_sample /= pz.iloc[i_sample]
 
-        if colored is False:
+        if density_plot is False:
             ax.scatter(x_sample*x_scale, y_sample*y_scale, alpha=alpha,
                        c=marker_color, edgecolor='', s=marker_size)
         else:
@@ -475,9 +475,9 @@ if __name__ == "__main__":
     psplot = PhaseSpacePlot('examples/impact_basic/fort.107', 'impact', 0.7e-12, cut_tail=0.1)
 
     print psplot
-    psplot.plot('t', 'x', colored=False, alpha=0.5)
+    psplot.plot('t', 'x', density_plot=False, alpha=0.5)
     psplot.plot('t', 'p')
-    psplot.plot('x', 'xp', x_unit='um', colored=False)
+    psplot.plot('x', 'xp', x_unit='um', density_plot=False)
     psplot.plot('x', 'xp', x_unit='um', output='x-xp')
 
     # lineplot = LinePlot('test/injector', 'astra')
