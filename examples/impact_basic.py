@@ -9,7 +9,7 @@ down the mismatch factor from 1.41 to 1.17.
 import numpy as np
 import sys
 import os
-sys.path.append(os.path.expanduser('~') + "/myscripts/linac_optimization/")
+sys.path.append(os.path.expanduser('~') + "/myscripts/linac_opt/")
 
 from linac_opt import LinacOpt
 

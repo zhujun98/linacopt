@@ -11,7 +11,7 @@ The optimized result is 0.51 fs and 0.099 um.
 """
 import sys
 import os
-sys.path.append(os.path.expanduser('~') + "/myscripts/linac_optimization/")
+sys.path.append(os.path.expanduser('~') + "/myscripts/linac_opt/")
 
 from linac_opt import LinacOpt
 

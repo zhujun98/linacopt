@@ -5,7 +5,7 @@ with a local search optimizer. Space-charge is switched off for speed.
 """
 import sys
 import os
-sys.path.append(os.path.expanduser('~') + "/myscripts/linac_optimization/")
+sys.path.append(os.path.expanduser('~') + "/myscripts/linac_opt/")
 
 from linac_opt import LinacOpt
 
