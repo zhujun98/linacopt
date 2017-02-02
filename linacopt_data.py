@@ -15,11 +15,12 @@ Jun Zhu
 Tested on:
 __________
 Ubuntu 14.04
+Ubuntu 16.04
 
 History:
 ________
 
-Last modified on 30/12/2016
+Last modified on 02/02/2017
 
 """
 
@@ -28,13 +29,13 @@ import re
 
 class LinacOptData(object):
     """Data object used in linacopt optimizer"""
-    def __init__(self, particle_type):
+    def __init__(self, particle_type=None):
         """"""
         self._particle_type = None
         if particle_type is not None:
             self.particle_type = particle_type
         else:
-            raise ValueError("particle_type is NoneType!")
+            self.particle_type = 'astra'
 
     @property
     def particle_type(self):
