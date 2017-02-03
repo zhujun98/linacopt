@@ -396,7 +396,7 @@ class LinacOpt(LinacOptData):
             self._n_fail = 0
             fail = 0
 
-        except IOError as e:
+        except (IOError, ValueError) as e:
             print str(e)
             self._f = [INF]*nobj
             self._f2pyopt = [INF]*nobj
