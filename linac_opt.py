@@ -90,7 +90,10 @@ class LinacOpt(LinacOptData):
         Number of restart runs.
     _n_fail: int
         Number of consecutive fails.
-    opt_prob: Optimization objeLAurrent optimizer.
+    opt_prob: object
+        Optimization object.
+    optimizer: object
+        Optimizer object in pyOpt.
     fit_points: FitPoints object
         Object with attributes being PhaseSpace objects.
     sections: Sections object
@@ -113,12 +116,15 @@ class LinacOpt(LinacOptData):
         True for stopping after one simulation. For debug.
     run_code: string
         String that can run the code in the shell.
-    max_duration: None/float/int
+    time_out: float/int
         Maximum allowed run time (in s) of one simulation.
+    complete_shell: Boolean
+        If True, the shell will only execute the string 'run_code',
+        which means the input file and the time_out will be ignored.
     """
     def __init__(self, path_name=None, input_file=None, input_template=None,
                  particle_type=None, prob_name='opt_prob',
-                 restart=None, run_once=False, max_fail=10):
+                 restart=None, run_once=False, max_fail=20):
         """Initialization.
 
         Parameters
@@ -157,7 +163,8 @@ class LinacOpt(LinacOptData):
         self.solution_file = None
 
         self.run_code = None
-        self.max_duration = None
+        self.time_out = 1200
+        self.complete_shell = False
 
         self._time_consumption = 0.0
         self._n_iter = 0
@@ -235,15 +242,18 @@ class LinacOpt(LinacOptData):
         """
         self.optimizer = name
 
-    def solve(self, run_code=None, max_duration=None):
+    def solve(self, run_code=None, time_out=None, complete_shell=None):
         """Run the optimization and print the result.
 
         Parameters
         ----------
-        run_code: string
+        run_code: None/string
             String that can run the code in the shell.
-        max_duration: None/float/int
+        time_out: None/float/int
             Maximum allowed run time (in s) of one simulation.
+        complete_shell: None/Boolean
+            If True, the shell will only execute the string 'run_code',
+            which means the input file and the time_out will be ignored.
         """
         # Continuous run
         # Read the optimized variable set from the .pkl file
@@ -259,7 +269,8 @@ class LinacOpt(LinacOptData):
             self.opt_prob._objectives = last_sol[4]
             self.opt_prob._constraints = last_sol[5]
             self.run_code = last_sol[6]
-            self.max_duration = last_sol[7]
+            self.time_out = last_sol[7]
+            self.complete_shell = last_sol[8]
 
             print("\n" + "*"*80 + "\n" + "Read the solution set from {}\n".
                   format(pickle_file) + "*"*80 + "\n")
@@ -279,8 +290,10 @@ class LinacOpt(LinacOptData):
 
         if run_code is not None:
             self.run_code = run_code
-        if max_duration is not None:
-            self.max_duration = max_duration
+        if time_out is not None:
+            self.time_out = time_out
+        if complete_shell is not None:
+            self.complete_shell = complete_shell
 
         self.log_file = self._prob_name + '.log.{:03d}'.format(self._n_restart)
         self.solution_file = self._prob_name + '.sol.{:03d}'.format(self._n_restart)
@@ -315,7 +328,8 @@ class LinacOpt(LinacOptData):
                     self.opt_prob.get_objset(),
                     self.opt_prob.get_conset(),
                     self.run_code,
-                    self.max_duration]
+                    self.time_out,
+                    self.complete_shell]
         with open(self._prob_name + '.sol.{:03d}.pkl'.format(self._n_restart), 'wb') as fp:
             pickle.dump(last_sol, fp)
 
@@ -572,12 +586,11 @@ class LinacOpt(LinacOptData):
         """Run the simulation."""
         self._remove_output_files()
 
-        if self.max_duration is None:
-            subprocess.call("{} {}>/dev/null".format(
-                self.run_code, self.input_file), shell=True)
+        if self.complete_shell is True:
+            subprocess.call(self.run_code, shell=True)
         else:
             subprocess.call("timeout {}s {} {}>/dev/null".format(
-                self.max_duration, self.run_code, self.input_file), shell=True)
+                self.time_out, self.run_code, self.input_file), shell=True)
 
     def _write_history(self, dt):
         """Save the optimization history to a log file."""
