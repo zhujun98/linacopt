@@ -45,7 +45,6 @@ opt_test.opt_prob.set_con('npar', g1, equal=500)
 # ------------------------------------------------
 # Add variables, co-variables and static-variables
 opt_test.opt_prob.set_var('laser_spot', value=0.2, lower=0.1, upper=0.5)
-opt_test.opt_prob.set_var('hc_sole_b', value=0.0, lower=0.0, upper=1.0)
 opt_test.opt_prob.set_var('main_sole_b', value=0.0, lower=0.0, upper=0.4)
 opt_test.opt_prob.set_var('tws1_sole_b', value=0.0, lower=0.0, upper=0.1)
 opt_test.opt_prob.set_var('tws2_sole_b', value=0.0, lower=0.0, upper=0.1)

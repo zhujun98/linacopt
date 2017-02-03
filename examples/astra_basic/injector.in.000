@@ -76,19 +76,15 @@
     Loop = .F 
     LBfield = .T
     
-    File_Bfield(1) = 'sole1.dat', S_pos(1) = 0.144
-    S_smooth(1) = 5  
-    MaxB(1) = <hc_sole_b>
-    
-    File_Bfield(2) = 'sole2.dat', S_pos(2) = 0.456
-    S_smooth(2) = 5 
+    File_Bfield(1) = 'sole2.dat', S_pos(2) = 0.456
+    S_smooth(1) = 5
     MaxB(2) = <main_sole_b>
     
-    FILE_BFieLD(3) = 'sole3.dat', S_pos(3) = 1.5
-    S_smooth(3) = 10
-    MaxB(3) = <tws1_sole_b> 
+    FILE_BFieLD(2) = 'sole3.dat', S_pos(3) = 1.5
+    S_smooth(2) = 10
+    MaxB(2) = <tws1_sole_b>
 
-    FILE_BFieLD(4) = 'sole3.dat', S_pos(4) = 3.7
-    S_smooth(4) = 10
-    MaxB(4) = <tws1_sole_b> 
+    FILE_BFieLD(3) = 'sole3.dat', S_pos(3) = 3.7
+    S_smooth(3) = 10
+    MaxB(3) = <tws1_sole_b>
 /
