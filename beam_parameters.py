@@ -141,7 +141,8 @@ class PhaseSpace(LinacOptData):
             Percentage of particles for slice properties.
         cut_halo: None/float
             Percentage of particles to be removed based on their
-            transverse distance to the bunch centroid.
+            transverse distance to the bunch centroid. Applied
+            before tail cutting.
         cut_tail: None/float
             Percentage of particles to be removed based on their
             longitudinal distance to the bunch centroid.
