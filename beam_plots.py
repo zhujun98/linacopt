@@ -60,9 +60,10 @@ class PhaseSpacePlot(PhaseSpace):
     The purpose of creating another class is that people do not have to
     install matplotlib for the optimizer.
     """
-    def plot(self, x, y, x_unit=None, y_unit=None, y1_unit=None, density_plot=True,
-             marker_size=2, marker_color='dodgerblue', alpha=1.0,
-             bins_2d=500, sigma_2d=5, sample=20000, output='', dpi=300):
+    def plot(self, x, y, special=True, x_unit=None, y_unit=None, y1_unit=None,
+             density_plot=True, marker_size=2, marker_color='dodgerblue',
+             alpha=1.0, bins_2d=500, sigma_2d=5, sample=20000, figsize=None,
+             output='', dpi=300):
         """Plot different phase-spaces
 
         Parameters
@@ -71,6 +72,8 @@ class PhaseSpacePlot(PhaseSpace):
             Variable in x-axis.
         y: string
             Variable in y-axis.
+        special: Boolean
+            True for turning on special effects of some plots.
         x_unit: string
             Units of y1 axes.
         y_unit: string
@@ -92,6 +95,8 @@ class PhaseSpacePlot(PhaseSpace):
         sample: non-negative int/float
             If sample < 1.0, sample by fraction else sample by count
             (round to integer).
+        figsize: None/tuple
+            Size of the figure (width, height).
         output: None/string
             Name of the output file.
         dpi: int
@@ -105,7 +110,12 @@ class PhaseSpacePlot(PhaseSpace):
         if phasespace is None:
             raise ValueError("NoneType phase-space data!")
 
-        fig, ax = plt.subplots(figsize=(8, 6))
+        if figsize is None:
+            figsize = (8, 6)
+            if density_plot is not True:
+                figsize = (6.8, 6)
+        fig, ax = plt.subplots(figsize=figsize)
+
         ax.margins(AX_MARGIN)
         ax.xaxis.set_major_locator(
             ticker.MaxNLocator(MAX_LOCATOR, symmetric=False))
@@ -138,7 +148,7 @@ class PhaseSpacePlot(PhaseSpace):
             cb = ax.scatter(x_sample*x_scale, y_sample*y_scale, c=density_color,
                             alpha=alpha, cmap='jet', edgecolor='', s=marker_size)
 
-            if (x, y) == ('t', 'p'):
+            if (x, y) == ('t', 'p') and special is True:
                 cbaxes = fig.add_axes([0.75, 0.07, 0.2, 0.02])
                 cbar = plt.colorbar(cb, orientation='horizontal', cax=cbaxes)
             else:
@@ -152,14 +162,14 @@ class PhaseSpacePlot(PhaseSpace):
                       fontsize=LABEL_FONT_SIZE, labelpad=LABEL_PAD)
         ax.tick_params(labelsize=TICK_FONT_SIZE, pad=TICK_PAD)
 
-        if (x, y) == ('x', 'xp') or (x, y) == ('y', 'yp'):
+        if ((x, y) == ('x', 'xp') or (x, y) == ('y', 'yp')) and special is True:
             plt.title(r'$\varepsilon_x$ = %s $\mu$m' %
                       float("%.2g" % (self.emitx*1e6)),
                       fontsize=TITLE_FONT_SIZE, y=1.02)
 
-        if (x, y) == ('t', 'p'):
+        if (x, y) == ('t', 'p') and special is True:
             if not y1_unit:
-                y1_unit = 'kA'
+                y1_unit = 'A'
 
             ax1 = ax.twinx()
             ax1.margins(AX_MARGIN)
