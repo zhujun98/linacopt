@@ -537,25 +537,20 @@ class LinacOpt(LinacOptData):
                 fp.write(line)
 
         # Looking for unused variables
-        if self._n_iter == 0:
-            un_matched = set()
-            for var in self.opt_prob.get_varset().values():
-                if var.name not in ptns:
-                    un_matched.add(var.name)
+        for var in self.opt_prob.get_varset().values():
+            if var.name not in ptns:
+                raise ValueError("Variable '{}' is not found in the input file!"
+                                 .format(var.name))
 
-            for covar in self.opt_prob.get_covarset().values():
-                if covar.name not in ptns:
-                    un_matched.add(covar.name)
+        for covar in self.opt_prob.get_covarset().values():
+            if covar.name not in ptns:
+                raise ValueError("Co-variable '{}' is not found in the input file!"
+                                 .format(covar.name))
 
-            for staticvar in self.opt_prob.get_staticvarset().values():
-                if staticvar.name not in ptns:
-                    un_matched.add(staticvar.name)
-
-            if len(un_matched) > 0 and self._n_iter == 1:
-                print "{}".format('*'*80)
-                print "Warning: the following patterns ares not found in the input file:"
-                print ", ".join([str(ele) for ele in un_matched])
-                print "{}".format('*'*80)
+        for staticvar in self.opt_prob.get_staticvarset().values():
+            if staticvar.name not in ptns:
+                raise ValueError("Static-variable '{}' is not found in the input file!"
+                                 .format(staticvar.name))
 
     def _remove_output_files(self):
         """Remove files generated in each simulation"""
