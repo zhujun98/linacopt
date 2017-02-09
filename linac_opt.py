@@ -582,10 +582,16 @@ class LinacOpt(LinacOptData):
         self._remove_output_files()
 
         if self.complete_shell is True:
-            subprocess.call(self.run_code, shell=True)
+            p = subprocess.Popen(self.run_code, shell=True, stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE)
+            stdout, stderr = p.communicate()
         else:
-            subprocess.call("timeout {}s {} {}>/dev/null".format(
-                self.time_out, self.run_code, self.input_file), shell=True)
+            p = subprocess.Popen("timeout {}s {} {} >/dev/null".format(
+                self.time_out, self.run_code, self.input_file), shell=True,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = p.communicate()
+
+        return stdout, stderr
 
     def _write_history(self, dt):
         """Save the optimization history to a log file."""
