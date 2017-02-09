@@ -306,7 +306,7 @@ class PhaseSpace(LinacOptData):
             self.data['t'].abs().sort_values(ascending=True).index)
         n_slice = int(len(sorted_data) * self.slice_percent)
         if n_slice < self._min_pars:
-            raise ValueError("Too few particles ({})in the slice data!".
+            raise ValueError("Too few particles ({}) in the slice data!".
                              format(n_slice))
 
         slice_data = sorted_data.iloc[:n_slice]
