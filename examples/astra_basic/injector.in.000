@@ -9,8 +9,8 @@
     TRACK_ALL = .T 
     PHASE_SCAN = .F
     AUTO_PHASE = .T
-    H_max = 0.010 
-    H_min = 0.00010 
+    H_max = 0.005
+    H_min = 0.00005
     Max_step = 10000000
     debunch = 0.0
     Z_Cathode = 0.0
@@ -18,7 +18,7 @@
  
 &OUTPUT
     ZSTART = 0.0 
-    ZSTOP = 6.0
+    ZSTOP = 4.0
     Zemit = 500
     Zphase = 1 
     High_res = .T
@@ -36,17 +36,15 @@
     Lsub_rot = .F  
     Lsub_cor = .F
     Lmagnetized = .F
-
-    Screen(1) = 0.29
 /
 
 &CHARGE 
-    LSPCH = .F
-    Max_scale = 0.1
-    Max_Count = 100
+    LSPCH = .T
+    Max_scale = 0.05
+    Max_Count = 40
     Exp_Control = 0.1
     Nrad = 16
-    Nlong_in = 16
+    Nlong_in = 32
     Lmirror = .F
     Cell_var = 2.0
     min_grid = 0.0  
@@ -64,27 +62,14 @@
     File_Efield(2) = 'tws_cavity.dat', Nue(2) = 2.998, C_pos(2) = 1.5
     C_numb(2) = 60, C_smooth(2) = 10
     MaxE(2) = 30.0
-    Phi(2) = 0.0 
-
-    File_Efield(3) = 'tws_cavity.dat', Nue(3) = 2.998, C_pos(3) = 3.7
-    C_numb(3) = 60, C_smooth(3) = 10
-    MaxE(3) = 30.0
-    Phi(3) = 0.0
+    Phi(2) = 0.0
 /
  
 &SOLENOID
     Loop = .F 
     LBfield = .T
     
-    File_Bfield(1) = 'sole2.dat', S_pos(2) = 0.456
+    File_Bfield(1) = 'sole_gun.dat', S_pos(1) = <main_sole_z>
     S_smooth(1) = 5
-    MaxB(2) = <main_sole_b>
-    
-    FILE_BFieLD(2) = 'sole3.dat', S_pos(3) = 1.5
-    S_smooth(2) = 10
-    MaxB(2) = <tws1_sole_b>
-
-    FILE_BFieLD(3) = 'sole3.dat', S_pos(3) = 3.7
-    S_smooth(3) = 10
-    MaxB(3) = <tws1_sole_b>
+    MaxB(1) = <main_sole_b>
 /
