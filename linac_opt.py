@@ -163,7 +163,7 @@ class LinacOpt(LinacOptData):
         self.solution_file = None
 
         self.run_code = None
-        self.time_out = 1200
+        self.time_out = 300
         self.complete_shell = False
 
         self._time_consumption = 0.0
