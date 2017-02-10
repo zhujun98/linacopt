@@ -42,8 +42,12 @@ version 1.00
 Last modified on 24/01/2017
 """
 import os
+import sys
+import psutil
 import subprocess
+import signal
 import re
+import time
 import pickle
 from glob import glob
 from datetime import datetime
@@ -584,14 +588,25 @@ class LinacOpt(LinacOptData):
         if self.complete_shell is True:
             p = subprocess.Popen(self.run_code, shell=True, stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
-            stdout, stderr = p.communicate()
         else:
             p = subprocess.Popen("timeout {}s {} {} >/dev/null".format(
                 self.time_out, self.run_code, self.input_file), shell=True,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            stdout, stderr = p.communicate()
 
-        return stdout, stderr
+        parent = psutil.Process(p.pid)
+        children = parent.children(recursive=True)
+        try:
+            output, error = p.communicate()
+        except KeyboardInterrupt:
+            parent.send_signal(signal.SIGINT) 
+            for child in children:
+                child.send_signal(signal.SIGINT)
+            raise KeyboardInterrupt 
+        
+        # In case of error, a large amount of child processes may be created
+        # in a short time if there is input error.
+        if error:
+            time.sleep(2)
 
     def _write_history(self, dt):
         """Save the optimization history to a log file."""
