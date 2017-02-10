@@ -158,7 +158,7 @@ class Optimization(pyOpt.Optimization):
         if ii >= 0:
             self._variables[i].value = self._covariables[ii].value
             self.del_covar(ii)
-            print "{} was changed from co-variable to variable!\n". \
+            print "\n{} was changed from co-variable to variable!". \
                 format(self._variables[i].name)
 
         # Try to inherit the value from the static variable set.
@@ -167,7 +167,7 @@ class Optimization(pyOpt.Optimization):
         if ii >= 0:
             self._variables[i].value = self._staticvariables[ii].value
             self.del_staticvar(ii)
-            print "{} was changed from static variable to variable!\n".\
+            print "\n{} was changed from static variable to variable!".\
                 format(self._variables[i].name)
 
         self._remove_duplicity(self._variables, i)
@@ -220,7 +220,7 @@ class Optimization(pyOpt.Optimization):
         # they will lose their values in the last optimization.
         try:
             self.del_var(self._covariables[i].name)
-            print "{} was changed from variable to co-variable!". \
+            print "\n{} was changed from variable to co-variable!". \
                 format(self._covariables[i].name)
             print "Warning: changing variable to co-variable may lose "\
                   "the optimized result!\n"
@@ -229,7 +229,7 @@ class Optimization(pyOpt.Optimization):
 
         try:
             self.del_staticvar(self._covariables[i].name)
-            print "{} was changed from static variable to co-variable!". \
+            print "\n{} was changed from static variable to co-variable!". \
                 format(self._covariables[i].name)
             print "Warning: changing static variable to co-variable may lose "\
                   "the optimized result!\n"
@@ -288,7 +288,7 @@ class Optimization(pyOpt.Optimization):
         if ii >= 0:
             self._staticvariables[i].value = self._variables[ii].value
             self.del_var(ii)
-            print "{} was changed from variable to static variable!\n". \
+            print "\n{} was changed from variable to static variable!\n". \
                 format(self._staticvariables[i].name)
 
         # Try to inherit the value from the co-variable set.
@@ -297,7 +297,7 @@ class Optimization(pyOpt.Optimization):
         if ii >= 0:
             self._staticvariables[i].value = self._covariables[ii].value
             self.del_covar(ii)
-            print "{} was changed from co-variable to static variable!\n". \
+            print "\n{} was changed from co-variable to static variable!\n". \
                 format(self._staticvariables[i].name)
 
         if self._staticvariables[i].value is None:
