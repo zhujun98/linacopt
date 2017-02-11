@@ -97,7 +97,7 @@ class PhaseSpacePlot(PhaseSpace):
             (round to integer).
         figsize: None/tuple
             Size of the figure (width, height).
-        output: None/string
+        output: string
             Name of the output file.
         dpi: int
             dpi of the png output.
@@ -190,7 +190,7 @@ class PhaseSpacePlot(PhaseSpace):
 
         plt.tight_layout()
         if output:
-            image_file = os.path.join(os.path.dirname(self.particle_file), output + '.png')
+            image_file = os.path.join(os.path.dirname(self.particle_file), output)
             plt.savefig(image_file, dpi=dpi)
             print(image_file + ' generated.')
         else:
@@ -264,8 +264,9 @@ class PhaseSpacePlot(PhaseSpace):
 
 class LinePlot(BeamEvolution):
     """Inherit from BeamEvolution object"""
-    def plot(self, names, x_unit=None, y_unit=None, x_lim=None,
-             y_lim=None, lattice_file=None, output='', dpi=300):
+    def plot(self, names, x_unit=None, y_unit=None, x_lim=None, y_lim=None,
+             lattice_file=None, figsize=None, colors=None, styles=None,
+             output='', dpi=300):
         """Plot the beam parameter evolution along the beamline
 
         Parameters
@@ -278,19 +279,18 @@ class LinePlot(BeamEvolution):
             Data limits for the x axis as [left, right]
         lattice_file: string
             File contains the magnetic lattice layout.
-        output: None/string
+        figsize: None/tuple
+            Size of the figure (width, height).
+        colors: None/string/list/tuple
+            A color or a list of colors.
+        styles: None/string/list/tuple
+            A line style or a list of line styles
+        output: string
             Name of the output file.
         dpi: int
             dpi of the png output.
         """
-        if isinstance(names, tuple):
-            pass
-        elif isinstance(names, list):
-            names = tuple(names)
-        elif isinstance(names, str):
-            names = tuple([names])
-        else:
-            raise TypeError()
+        names = _to_tuple(names)
 
         if len(names) > 2:
             raise ValueError("\nToo many (>2) variables to plot at one axis!")
@@ -305,15 +305,24 @@ class LinePlot(BeamEvolution):
 
         x_unit_label, x_scale = unit_scale(x_unit)
 
-        fig, ax = plt.subplots(figsize=(8, 5))
+        if figsize is None:
+            figsize = (8, 5)
+        fig, ax = plt.subplots(figsize=figsize)
         ax.margins(AX_MARGIN)
         ax.xaxis.set_major_locator(
             ticker.MaxNLocator(MAX_LOCATOR, symmetric=False))
         ax.yaxis.set_major_locator(
             ticker.MaxNLocator(MAX_LOCATOR, symmetric=False))
 
-        colors = ['dodgerblue', 'firebrick']
-        styles = ['-', '--']
+        if colors is None:
+            colors = ['dodgerblue', 'firebrick']
+        else:
+            colors = _to_tuple(colors)
+
+        if styles is None:
+            styles = ['-', '--']
+        else:
+            styles = _to_tuple(styles)
 
         # Set the default y unit
         if y_unit is None:
@@ -352,11 +361,25 @@ class LinePlot(BeamEvolution):
         plt.tight_layout()
 
         if output:
-            image_file = os.path.join(os.path.dirname(self.root_name), output + '.png')
+            image_file = os.path.join(os.path.dirname(self.root_name), output)
             plt.savefig(image_file, dpi=dpi)
             print(image_file + ' generated.')
         else:
             plt.show()
+
+
+def _to_tuple(input):
+    """Convert input to a tuple"""
+    if isinstance(input, tuple):
+        output = input
+    elif isinstance(input, list):
+        output = tuple(input)
+    elif isinstance(input, str):
+        output = tuple([input])
+    else:
+        raise TypeError()
+
+    return output
 
 
 def name2label(name):
@@ -482,18 +505,18 @@ def unit_scale(unit):
 if __name__ == "__main__":
     # Test
     # psplot = PhaseSpacePlot('test/injector.0600.001', 'astra')
-    psplot = PhaseSpacePlot('examples/impact_basic/fort.107', 'impact', 0.7e-12, cut_tail=0.1)
+    psplot = PhaseSpacePlot('examples/plots/fort.140', 'impact', 3.1e-12, cut_tail=0.1)
 
     print psplot
     psplot.plot('t', 'x', density_plot=False, alpha=0.5)
     psplot.plot('t', 'p')
     psplot.plot('x', 'xp', x_unit='um', density_plot=False)
-    psplot.plot('x', 'xp', x_unit='um', output='x-xp')
+    psplot.plot('x', 'xp', x_unit='um', output='x-xp.png')
 
     # lineplot = LinePlot('test/injector', 'astra')
-    lineplot = LinePlot('examples/impact_basic/fort', 'impact')
+    lineplot = LinePlot('examples/plots/fort', 'impact')
     #
     lineplot.plot('Sz')
-    lineplot.plot(['betax', 'betay'], output='betaxy')
-    lineplot.plot(['Sx', 'Sy'])
-    lineplot.plot(['Sx', 'Sy'], x_lim=[29.5, 29.6], y_lim=(0, 1))
+    lineplot.plot(['betax', 'betay'], output='betaxy.png')
+    lineplot.plot(['Sx', 'Sy'], colors=('red', 'blue'), styles=(':', '-.'))
+    lineplot.plot(['Sx', 'Sy'], x_lim=[30, 31], y_lim=(0, 0.25))
