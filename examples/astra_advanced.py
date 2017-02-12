@@ -37,7 +37,7 @@ opt_test = LinacOpt(path_name='./astra_advanced',
                     input_template='injector.in.000',
                     particle_type='astra',
                     prob_name='opt_test',
-                    restart=1,
+                    restart=None,
                     max_fail=100)
 
 # ---------------------------------------------
