@@ -39,7 +39,7 @@ History:
 ________
 
 version 1.00
-Last modified on 24/01/2017
+Last modified on 12/02/2017
 """
 import os
 import sys
@@ -463,7 +463,7 @@ class LinacOpt(LinacOptData):
 
                 for ii, var in self.opt_prob.get_varset().iteritems():
                     if name == var.name:
-                        x_ii += covar.slope_[jj] * self._x[ii]
+                        x_ii += covar.slope[jj] * self._x[ii]
                         flag = True
                         break
 
@@ -473,7 +473,7 @@ class LinacOpt(LinacOptData):
 
                 jj += 1
 
-            x_ii += covar.intercept_
+            x_ii += covar.intercept
 
             xc.append(x_ii)
 
