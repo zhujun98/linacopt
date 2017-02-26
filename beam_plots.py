@@ -74,15 +74,15 @@ class PhaseSpacePlot(PhaseSpace):
         special: Boolean
             True for turning on special effects of some plots.
         x_unit: string
-            Units of y1 axes.
+            Units of y1 axis.
         y_unit: string
-            Units of y1 axes.
+            Units of y1 axis.
         y1_unit: string
-            Units of y1 axes.
+            Units of y1 axis.
         x_lim -> tuple
-            Data limits for the x axis as (left, right)
+            Limits for the x axis as (left, right)
         y_lim -> tuple
-            Data limits for the y axis as (left, right)
+            Limits for the y axis as (left, right)
         density_plot: Boolean
             True for colorful density plot.
         marker_size: int
@@ -286,10 +286,14 @@ class LinePlot(BeamEvolution):
         ----------
         names: string/list/tuple
             A variable or a list of variables to plot
-        x_unit/y_unit -> string
-            Units of x/y axes
-        x_lim/y_lim -> tuple
-            Data limits for the x axis as [left, right]
+        x_unit: string
+            Units of y1 axis.
+        y_unit: string
+            Units of y1 axis.
+        x_lim -> tuple
+            Limits for the x axis as (left, right)
+        y_lim -> tuple
+            Limits for the y axis as (left, right)
         lattice_file: string
             File contains the magnetic lattice layout.
         figsize: None/tuple
