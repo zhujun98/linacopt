@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 """
 
 beam_plots.py
@@ -43,7 +42,7 @@ from scipy.ndimage.filters import gaussian_filter
 from beam_parameters import PhaseSpace
 from beam_evolutions import BeamEvolution
 
-matplotlib.rcParams['text.usetex'] = True
+
 LABEL_FONT_SIZE = 26
 TITLE_FONT_SIZE = 18
 TICK_FONT_SIZE = 20
@@ -61,9 +60,9 @@ class PhaseSpacePlot(PhaseSpace):
     install matplotlib for the optimizer.
     """
     def plot(self, x, y, special=True, x_unit=None, y_unit=None, y1_unit=None,
-             density_plot=True, marker_size=2, marker_color='dodgerblue',
-             alpha=1.0, bins_2d=500, sigma_2d=5, sample=20000, figsize=None,
-             output='', dpi=300):
+             x_lim=None, y_lim=None, density_plot=True, marker_size=2, 
+             marker_color='dodgerblue', alpha=1.0, bins_2d=500, sigma_2d=5, 
+             sample=20000, figsize=None, output='', dpi=300):
         """Plot different phase-spaces
 
         Parameters
@@ -80,6 +79,10 @@ class PhaseSpacePlot(PhaseSpace):
             Units of y1 axes.
         y1_unit: string
             Units of y1 axes.
+        x_lim -> tuple
+            Data limits for the x axis as (left, right)
+        y_lim -> tuple
+            Data limits for the y axis as (left, right)
         density_plot: Boolean
             True for colorful density plot.
         marker_size: int
@@ -162,9 +165,14 @@ class PhaseSpacePlot(PhaseSpace):
                       fontsize=LABEL_FONT_SIZE, labelpad=LABEL_PAD)
         ax.tick_params(labelsize=TICK_FONT_SIZE, pad=TICK_PAD)
 
-        if ((x, y) == ('x', 'xp') or (x, y) == ('y', 'yp')) and special is True:
+        if (x, y) == ('x', 'xp') and special is True:
             plt.title(r'$\varepsilon_x$ = %s $\mu$m' %
                       float("%.2g" % (self.emitx*1e6)),
+                      fontsize=TITLE_FONT_SIZE, y=1.02)
+
+        if (x, y) == ('y', 'yp') and special is True:
+            plt.title(r'$\varepsilon_y$ = %s $\mu$m' %
+                      float("%.2g" % (self.emity*1e6)),
                       fontsize=TITLE_FONT_SIZE, y=1.02)
 
         if (x, y) == ('t', 'p') and special is True:
@@ -187,6 +195,11 @@ class PhaseSpacePlot(PhaseSpace):
                       + r", $\sigma_\delta$ = %s " % float("%.2g" % self.Sdelta)
                       + r", $Q$ = %s pC" % float("%.2g" % (self.charge*1e12)),
                       fontsize=TITLE_FONT_SIZE, y=1.02)
+
+        if x_lim is not None:
+            ax.set_xlim(x_lim)
+        if y_lim is not None:
+            ax.set_ylim(y_lim)
 
         plt.tight_layout()
         if output:

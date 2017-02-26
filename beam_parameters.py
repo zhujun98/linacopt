@@ -28,8 +28,6 @@ Ubuntu 16.04
 History:
 ________
 
-Last modified on 01/02/2017
-
 """
 import os
 
@@ -249,10 +247,12 @@ class PhaseSpace(LinacOptData):
         if isinstance(self.cut_tail, float) and 0.0 < self.cut_tail < 1.0:
             self.n = int(self.n*(1 - self.cut_tail))
             self.charge *= float(self.n)/self.n0
-
+            # User median() here to deal with extreme outliers
+            self.data['t'] -= self.data['t'].median()
             self.data = self.data.reindex(
                 self.data['t'].abs().sort_values(ascending=True).index)
             self.data = self.data[:self.n]
+            self.data['t'] -= self.data['t'].mean()
 
         # Too few particles may cause error during the following
         # calculation, e.g. negative value in sqrt.
@@ -433,6 +433,8 @@ class PhaseSpace(LinacOptData):
         output = os.path.join(os.path.dirname(self.particle_file), file_name)
         with open(output, 'wb') as f:
             print >>f, self
+            
+        print("Saved parameters at {}".format(file_name))
 
     def __str__(self):
         """"""
