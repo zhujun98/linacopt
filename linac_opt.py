@@ -273,8 +273,12 @@ class LinacOpt(LinacOptData):
             self.opt_prob._objectives = last_sol[4]
             self.opt_prob._constraints = last_sol[5]
             self.run_code = last_sol[6]
-            self.time_out = last_sol[7]
-            self.complete_shell = last_sol[8]
+            # For backward compatible
+            try:
+                self.time_out = last_sol[7]
+                self.complete_shell = last_sol[8]
+            except IndexError:
+                pass
 
             print("\n" + "*"*80 + "\n" + "Read the solution set from {}\n".
                   format(pickle_file) + "*"*80 + "\n")
