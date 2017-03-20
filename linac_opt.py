@@ -90,8 +90,8 @@ class LinacOpt(LinacOptData):
         Time consumption (in second) of the last iteration.
     _n_iter: int
         Number of iterations in the current run.
-    _n_restart: int
-        Number of restart runs.
+    _nstep: int
+        No. of optimization steps.
     _n_fail: int
         Number of consecutive fails.
     opt_prob: object
@@ -114,8 +114,6 @@ class LinacOpt(LinacOptData):
         Constraint values seen by pyOpt.
     _g: array-like
         Constraint values calculated by func.
-    _restart: None or int
-        None for new run and int for restarting from the restart-th run.
     _run_once: Boolean
         True for stopping after one simulation. For debug.
     run_code: string
@@ -172,7 +170,8 @@ class LinacOpt(LinacOptData):
 
         self._time_consumption = 0.0
         self._n_iter = 0
-        self._n_restart = 0
+        self._nstep = 0
+        self.nstep = restart
         self._n_fail = 0
         self._max_fail = max_fail
 
@@ -199,11 +198,24 @@ class LinacOpt(LinacOptData):
         self._g = None  # Constraint values calculated by func
         self._xc = None  # Co-variables
 
-        self._restart = restart
-        if self._restart is not None:
-            assert type(restart) == int and restart > 0
-
         self._run_once = run_once  # For debug
+
+    @property
+    def nstep(self):
+        """Property nstep getter"""
+        return self._nstep
+
+    @nstep.setter
+    def nstep(self, value):
+        """Property nstep setter
+
+        Parameters
+        ----------
+        value: int
+            No. of steps.
+        """
+        if isinstance(value, int) and value > self.nstep:
+            self._nstep = value
 
     @property
     def optimizer(self):
@@ -223,7 +235,7 @@ class LinacOpt(LinacOptData):
             self._optimizer = pyOpt.SDPEN()
             self._optimizer_name = 'sdpen'
             self._optimizer.setOption('ifile', 'SDPEN.out.' +
-                                      "{:03d}".format(self._n_restart))
+                                      "{:03d}".format(self._nstep))
 
         elif re.search(r'^alpso', name, re.IGNORECASE):
             self._optimizer = pyOpt.ALPSO()
@@ -261,8 +273,8 @@ class LinacOpt(LinacOptData):
         """
         # Continuous run
         # Read the optimized variable set from the .pkl file
-        if self._restart is not None and self._restart > self._n_restart:
-            pickle_file = self._prob_name + '.sol.{:03d}.pkl'.format(self._n_restart)
+        if isinstance(self._nstep, int) and self._restart > self._nstep:
+            pickle_file = self._prob_name + '.sol.{:03d}.pkl'.format(self._nstep)
             with open(pickle_file, 'rb') as fp:
                 last_sol = pickle.load(fp)
             self.name = last_sol[0]
@@ -283,10 +295,10 @@ class LinacOpt(LinacOptData):
             print("\n" + "*"*80 + "\n" + "Read the solution set from {}\n".
                   format(pickle_file) + "*"*80 + "\n")
 
-            self._n_restart += 1
+            self._nstep += 1
             return
 
-        elif self._n_restart == 0:
+        elif self._nstep == 0:
             existing_log_files = glob(self._prob_name + '.log.*')
             existing_sol_files = glob(self._prob_name + '.sol.*')
             for this_file in existing_log_files:
@@ -303,8 +315,8 @@ class LinacOpt(LinacOptData):
         if complete_shell is not None:
             self.complete_shell = complete_shell
 
-        self.log_file = self._prob_name + '.log.{:03d}'.format(self._n_restart)
-        self.solution_file = self._prob_name + '.sol.{:03d}'.format(self._n_restart)
+        self.log_file = self._prob_name + '.log.{:03d}'.format(self._nstep)
+        self.solution_file = self._prob_name + '.sol.{:03d}'.format(self._nstep)
 
         print "\n{}".format('*'*80)
         print "Start solving the following problem with " + \
@@ -338,11 +350,11 @@ class LinacOpt(LinacOptData):
                     self.run_code,
                     self.time_out,
                     self.complete_shell]
-        with open(self._prob_name + '.sol.{:03d}.pkl'.format(self._n_restart), 'wb') as fp:
+        with open(self._prob_name + '.sol.{:03d}.pkl'.format(self._nstep), 'wb') as fp:
             pickle.dump(last_sol, fp)
 
         self._n_iter = 0
-        self._n_restart += 1
+        self._nstep += 1
 
     def _run_optimized(self):
         """Run the simulation with the optimized variables.
@@ -618,7 +630,7 @@ class LinacOpt(LinacOptData):
             with open(self.log_file, 'wb') as fp:
                 fp.write(self.opt_prob.name
                          + ', optimizer = {}'.format(self._optimizer_name)
-                         + ', nrestart = {}'.format(self._n_restart)
+                         + ', nrestart = {}'.format(self._nstep)
                          + '\n\n')
 
                 fp.write('{:>6}, {:>12}'.format('niter', 'runtime (s)'))
