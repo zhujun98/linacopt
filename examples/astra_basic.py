@@ -5,8 +5,7 @@ with a local search optimizer.
 
 The solution is 0.141 at laser_spot = 0.040 and main_sole_b = 0.2815.
 """
-import sys
-import os
+import sys, os
 sys.path.append(os.path.expanduser('~') + "/myscripts/linac_opt/")
 
 from linac_opt import LinacOpt
@@ -17,13 +16,12 @@ from linac_opt import LinacOpt
 opt_test = LinacOpt(path_name='./astra_basic',
                     input_file='injector.in',
                     input_template='injector.in.000',
-                    particle_type='astra',
-                    prob_name='opt_test')
+                    particle_type='astra')
 
 # --------------------
 # Set up the optimizer
 opt_test.set_optimizer('sdpen')
-opt_test.optimizer.setOption('alfa_stop', 1e-3)
+opt_test.optimizer.setOption('alfa_stop', 1e-2)
 
 # --------------
 # Add fit points
@@ -50,4 +48,4 @@ opt_test.opt_prob.set_var('main_sole_b', value=0.1, lower=0.0, upper=0.4)
 # --------------------
 # Run the optimization
 opt_test.solve('astra')
-opt_test.solve('mpirun -np 2 astra_r62_Linux_x86_64_OpenMPI_1.6.1')
+# opt_test.solve('mpirun -np 2 astra_r62_Linux_x86_64_OpenMPI_1.6.1')
