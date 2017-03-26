@@ -121,7 +121,7 @@ class PhaseSpace(LinacOptData):
         Average timing (s).
     """
     def __init__(self, particle_file, particle_type, charge=None, q_norm=None,
-                 slice_percent=0.1, cut_halo=None, cut_tail=None,
+                 slice_percent=0.1, cut_halo=None, cut_tail=None, rotation=None,
                  current_bins='auto', filter_size=1, min_pars=5, opt=False):
         """
         Parameters
@@ -144,6 +144,8 @@ class PhaseSpace(LinacOptData):
         cut_tail: None/float
             Percentage of particles to be removed based on their
             longitudinal distance to the bunch centroid.
+        rotation: None/float
+            Apply rotation (in degree) to the phasespace.
         current_bins: int/'auto'
             No. of bins to calculate the current profile.
         filter_size: int/float
@@ -174,6 +176,7 @@ class PhaseSpace(LinacOptData):
 
         self.cut_halo = cut_halo
         self.cut_tail = cut_tail
+        self.rotation = rotation
 
         self.data = None
 
@@ -222,6 +225,9 @@ class PhaseSpace(LinacOptData):
             self.data, self.charge = parser.astra_parser(self.particle_file)
         elif self.particle_type == 'impact':
             self.data = parser.impact_parser(self.particle_file)
+
+        if isinstance(self.rotation, (float, int)):
+            self._rotate()
 
         self.n0 = len(self.data)
         self.n = self.n0
@@ -322,6 +328,10 @@ class PhaseSpace(LinacOptData):
         # already very close to 1.
         self.Sdelta_un = self.Sdelta_slice * np.sqrt(
             1 - (slice_data['t'].corr(slice_data['p'])) ** 2)
+
+    def _rotate(self):
+        """Rotate the phasespace"""
+        raise NotImplemented
 
     @staticmethod
     def _canonical_emit(x, px):
