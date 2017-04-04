@@ -50,7 +50,7 @@ class PhaseSpace(LinacOptData):
     Attributes
     ----------
     data: pandas.DataFrame object
-        Columns: x (m), y (m), z (m), px, py, t (s, dt), p (mc)
+        Columns: x (m), y (m), z (m), px (mc), py (mc), pz (mc), t (s, dt)
 
     particle_file: string
         Name of the particle file.
@@ -121,7 +121,7 @@ class PhaseSpace(LinacOptData):
         Average timing (s).
     """
     def __init__(self, particle_file, particle_type, charge=None, q_norm=None,
-                 slice_percent=0.1, cut_halo=None, cut_tail=None, rotation=None,
+                 slice_percent=0.1, cut_halo=None, cut_tail=None, rotate=None,
                  current_bins='auto', filter_size=1, min_pars=5, opt=False):
         """
         Parameters
@@ -144,7 +144,7 @@ class PhaseSpace(LinacOptData):
         cut_tail: None/float
             Percentage of particles to be removed based on their
             longitudinal distance to the bunch centroid.
-        rotation: None/float
+        rotate: None/float
             Apply rotation (in degree) to the phasespace.
         current_bins: int/'auto'
             No. of bins to calculate the current profile.
@@ -176,7 +176,7 @@ class PhaseSpace(LinacOptData):
 
         self.cut_halo = cut_halo
         self.cut_tail = cut_tail
-        self.rotation = rotation
+        self.rotate = rotate
 
         self.data = None
 
@@ -226,7 +226,7 @@ class PhaseSpace(LinacOptData):
         elif self.particle_type == 'impact':
             self.data = parser.impact_parser(self.particle_file)
 
-        if isinstance(self.rotation, (float, int)):
+        if isinstance(self.rotate, (float, int)):
             self._rotate()
 
         self.n0 = len(self.data)
@@ -266,16 +266,16 @@ class PhaseSpace(LinacOptData):
             raise ValueError("Too few particles ({}) in the data!".
                              format(self.n))
 
-        pz = np.sqrt(self.data['p']**2 - self.data['px']**2 - self.data['py']**2)
+        p = np.sqrt(self.data['pz']**2 + self.data['px']**2 + self.data['py']**2)
 
-        p_ave = self.data['p'].mean()
-        dp = (self.data['p'] - p_ave) / p_ave
+        p_ave = p.mean()
+        dp = (p - p_ave) / p_ave
         dz = self.data['z'] - self.data['z'].mean()
 
         self.p = p_ave
         self.gamma = np.sqrt(p_ave ** 2 + 1)
         self.chirp = -1 * dp.cov(dz) / dz.var(ddof=0)
-        self.Sdelta = self.data['p'].std(ddof=0) / p_ave
+        self.Sdelta = p.std(ddof=0) / p_ave
         self.St = self.data['t'].std(ddof=0)
         self.Sz = self.data['z'].std(ddof=0)
 
@@ -294,17 +294,19 @@ class PhaseSpace(LinacOptData):
         self.emitx = self._canonical_emit(self.data['x'], self.data['px'])
 
         self.Sx, self.betax, self.alphax, self.emitx_tr \
-            = self._twiss(self.data['x'], dz, self.data['px'], pz, self.gamma)
+            = self._twiss(self.data['x'], dz, self.data['px'],
+                          self.data['pz'], self.gamma)
 
         self.emity = self._canonical_emit(self.data['y'], self.data['py'])
 
         self.Sy, self.betay, self.alphay, self.emity_tr \
-            = self._twiss(self.data['y'], dz, self.data['py'], pz, self.gamma)
+            = self._twiss(self.data['y'], dz, self.data['py'],
+                          self.data['pz'], self.gamma)
 
         self.Cx = self.data['x'].mean()
         self.Cy = self.data['y'].mean()
-        self.Cxp = (self.data['px'] / pz).mean()
-        self.Cyp = (self.data['py'] / pz).mean()
+        self.Cxp = (self.data['px'] / self.data['pz']).mean()
+        self.Cyp = (self.data['py'] / self.data['pz']).mean()
         self.Ct = self.data['t'].mean()
 
         # Calculate the slice parameters
@@ -316,10 +318,12 @@ class PhaseSpace(LinacOptData):
                              format(n_slice))
 
         slice_data = sorted_data.iloc[:n_slice]
+        p_slice = np.sqrt(slice_data['pz']**2 + slice_data['px']**2
+                          + slice_data['py']**2)
 
         self.emitx_slice = self._canonical_emit(slice_data.x, slice_data.px)
         self.emity_slice = self._canonical_emit(slice_data.y, slice_data.py)
-        self.Sdelta_slice = slice_data.p.std(ddof=0) / slice_data.p.mean()
+        self.Sdelta_slice = p_slice.std(ddof=0) / p_slice.mean()
         self.St_slice = sorted_data.iloc[:n_slice].t.std(ddof=0)
 
         # The output will be different from the output by msddsplot
@@ -327,11 +331,45 @@ class PhaseSpace(LinacOptData):
         # affects the correlation calculation since the value is
         # already very close to 1.
         self.Sdelta_un = self.Sdelta_slice * np.sqrt(
-            1 - (slice_data['t'].corr(slice_data['p'])) ** 2)
+            1 - (slice_data['t'].corr(p_slice)) ** 2)
 
     def _rotate(self):
-        """Rotate the phasespace"""
-        raise NotImplemented
+        """Rotate the phasespace
+
+        Provided by F. Mayer
+        """
+        theta = self.rotate * np.pi / 180.0  # Convert to rad
+
+        # x(m), px(mc), y(m), py(mc), t(s), p(mc), z(m).
+
+        cos_theta = np.cos(theta)
+        sin_theta = np.sin(theta)
+
+        def transformation(r, cm):
+            x = r[0]
+            y = r[1]
+            z = r[2]
+            cx = cm[0]
+            cy = cm[1]
+            cz = cm[2]
+
+            x_new = cx - cx*cos_theta + x*cos_theta - cz*sin_theta + z*sin_theta
+            y_new = y
+            z_new = cz - cz*cos_theta + z*cos_theta + cx*sin_theta - x*sin_theta
+
+            return [x_new, y_new, z_new]
+
+        pos = [self.data['x'], self.data['y'], self.data['z']]
+        cm_pos = [np.mean(self.data['x']), np.mean(self.data['y']),
+                  np.mean(self.data['z'])]
+        mom = [self.data['px'], self.data['py'], self.data['pz']]
+        cm_mom = [np.mean(self.data['px']), np.mean(self.data['py']),
+                  np.mean(self.data['pz'])]
+
+        [self.data['x'], self.data['y'], self.data['z']] = \
+            transformation(pos, cm_pos)
+        [self.data['px'], self.data['py'], self.data['pz']] = \
+            transformation(mom, cm_mom)
 
     @staticmethod
     def _canonical_emit(x, px):
@@ -484,7 +522,7 @@ class PhaseSpaceParser(object):
     """Read the phase-space data from file
 
     The returned phase-space data contains the following columns:
-        x (m), px (mc), y (m), py (mc), t (s), p (mc), z(m).
+        x (m), px (mc), y (m), py (mc), z(m), pz (mc), t (s).
     """
     @staticmethod
     def astra_parser(particle_file):
@@ -541,7 +579,7 @@ class PhaseSpaceParser(object):
 
         charge = -1e-9 * data['charge'].sum()
 
-        data.drop(['charge', 'index', 'flag', 'pz'], inplace=True, axis=1)
+        data.drop(['charge', 'index', 'flag', 'p'], inplace=True, axis=1)
 
         return data, charge
 
@@ -567,28 +605,27 @@ class PhaseSpaceParser(object):
         # Drop the first row if the input file is 'partcl.data'.
         data.dropna(inplace=True)
 
-        data['t'] = \
-            -(data['z'] - data['z'].mean()) \
-            / (V_LIGHT * data['pz'] / np.sqrt(data['pz'] ** 2 + 1))
-
         data['p'] = \
             np.sqrt(data['px'] ** 2 + data['py'] ** 2 + data['pz'] ** 2)
 
-        data.drop(['pz'], inplace=True, axis=1)
+        data['t'] = -(data['z'] - data['z'].mean()) \
+                    / (V_LIGHT * data['pz'] / np.sqrt(data['p'] ** 2 + 1))
+
+        data.drop(['p'], inplace=True, axis=1)
 
         return data
 
 
 if __name__ == "__main__":
     # Test
-    ps_astra = PhaseSpace('examples/astra_basic/injector.0600.001', 'astra')
+    ps_astra = PhaseSpace('examples/plots/injector.0400.001', 'astra')
     print '-'*80 + "\nParameters for {}:\n".format(ps_astra.particle_file)
     print ps_astra
     ps_astra.output_params()
 
-    ps_impact = PhaseSpace('examples/impact_basic/fort.107', 'impact',
-                           charge=0.7e-12, q_norm=None, cut_tail=0.1,
-                           cut_halo=0.1, current_bins=128, filter_size=2,
+    ps_impact = PhaseSpace('examples/plots/fort.140', 'impact',
+                           charge=1.0e-12, q_norm=None, cut_tail=0.0, rotate=30,
+                           cut_halo=0.0, current_bins=128, filter_size=2,
                            slice_percent=0.05, min_pars=10)
     ps_impact.update()
     print '-'*80 + "\nParameters for {}:\n".format(ps_impact.particle_file)

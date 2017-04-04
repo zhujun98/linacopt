@@ -137,12 +137,10 @@ class PhaseSpacePlot(PhaseSpace):
             self.sample_data(phasespace[self.get_column(x)], phasespace[self.get_column(y)],
                              bins=bins_2d, sigma=sigma_2d, sample=sample)
 
-        pz = np.sqrt(phasespace.p**2 - phasespace.px**2 - phasespace.py**2)
-
         if x in ['xp', 'yp']:
-            x_sample /= pz.iloc[i_sample]
+            x_sample /= phasespace.pz.iloc[i_sample]
         if y in ['xp', 'yp']:
-            y_sample /= pz.iloc[i_sample]
+            y_sample /= phasespace.pz.iloc[i_sample]
 
         if density_plot is False:
             ax.scatter(x_sample*x_scale, y_sample*y_scale, alpha=alpha,
