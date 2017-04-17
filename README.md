@@ -1,5 +1,5 @@
 # LinacOpt
-An Object-oriented Python optimizer used for linac optimization with ASTRA and IMPACT-T
+An object-oriented Python API for beam dynamics optimization with ASTRA and IMPACT-T.
 
 Global optimizers: 
 
