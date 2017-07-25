@@ -93,8 +93,8 @@ class PhaseSpace(LinacOptData):
         Fractional slice energy spread.
     St: float
         RMS bunch duration (s).
-    St_slice: float
-        RMS slice bunch duration (s).
+    dt_slice: float
+        Slice full duration (s).
     Sz: float
         RMS bunch length (m).
     I_peak: float
@@ -189,7 +189,7 @@ class PhaseSpace(LinacOptData):
         self.Sdelta = None
         self.Sdelta_slice = None
         self.St = None
-        self.St_slice = None
+        self.dt_slice = None
         self.Sz = None
         self.I_peak = None
         self.Sdelta_un = None
@@ -312,19 +312,22 @@ class PhaseSpace(LinacOptData):
         # Calculate the slice parameters
         sorted_data = self.data.reindex(
             self.data['t'].abs().sort_values(ascending=True).index)
-        n_slice = int(len(sorted_data) * self.slice_percent)
-        if n_slice < self._min_pars:
-            raise ValueError("Too few particles ({}) in the slice data!".
-                             format(n_slice))
 
-        slice_data = sorted_data.iloc[:n_slice]
+        dt_slice = 4*self.St*self.slice_percent  # assume 6-sigma full bunch length
+        slice_data = sorted_data[(sorted_data.t > self.Ct - dt_slice/2) &
+                                 (sorted_data.t < self.Ct + dt_slice/2)]
+        print(self.slice_percent)
+        if len(slice_data) < self._min_pars:
+            raise ValueError("Too few particles ({}) in the slice data!".
+                             format(len(slice_data)))
+
         p_slice = np.sqrt(slice_data['pz']**2 + slice_data['px']**2
                           + slice_data['py']**2)
 
         self.emitx_slice = self._canonical_emit(slice_data.x, slice_data.px)
         self.emity_slice = self._canonical_emit(slice_data.y, slice_data.py)
         self.Sdelta_slice = p_slice.std(ddof=0) / p_slice.mean()
-        self.St_slice = sorted_data.iloc[:n_slice].t.std(ddof=0)
+        self.dt_slice = slice_data.t.max() - slice_data.t.min()
 
         # The output will be different from the output by msddsplot
         # because the slightly different No of particles sliced. It
@@ -499,13 +502,13 @@ class PhaseSpace(LinacOptData):
         text += "{:16.4e}    {:16.4e}    {:16.4e}    {:16.4e}\n\n". \
             format(self.betax, self.betay, self.alphax, self.alphay)
         text += "{:16}    {:16}    {:16}    {:16}\n". \
-            format('St (m)', 'Sdelta', 'chirp (1/m)', 'Ct (s)')
+            format('St (s)', 'Sdelta', 'chirp (1/m)', 'Ct (s)')
         text += "{:16.4e}    {:16.4e}    {:16.4e}    {:16.4e}\n\n". \
             format(self.St, self.Sdelta, self.chirp, self.Ct)
         text += "{:16}    {:16}    {:16}    {:16}\n". \
-            format('emitx_slice (m)', 'emity_slice', 'Sdelta_slice', 'St_slice')
+            format('emitx_slice (m)', 'emity_slice (m)', 'Sdelta_slice', 'dt_slice (s)')
         text += "{:16.4e}    {:16.4e}    {:16.4e}    {:16.4e}\n\n". \
-            format(self.emitx_slice, self.emity_slice, self.Sdelta_slice, self.St_slice)
+            format(self.emitx_slice, self.emity_slice, self.Sdelta_slice, self.dt_slice)
         text += "{:16}    {:16}    {:16}    {:16}\n". \
             format('Cx (m)', 'Cy (m)', 'Cxp (rad)', 'Cyp (rad)')
         text += "{:16.4e}    {:16.4e}    {:16.4e}    {:16.4e}\n\n". \
@@ -626,7 +629,7 @@ if __name__ == "__main__":
     ps_impact = PhaseSpace('examples/plots/fort.140', 'impact',
                            charge=1.0e-12, q_norm=None, cut_tail=0.0, rotate=30,
                            cut_halo=0.0, current_bins=128, filter_size=2,
-                           slice_percent=0.05, min_pars=10)
+                           slice_percent=0.1, min_pars=10)
     ps_impact.update()
     print '-'*80 + "\nParameters for {}:\n".format(ps_impact.particle_file)
     print ps_impact
