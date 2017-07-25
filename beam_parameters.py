@@ -316,7 +316,7 @@ class PhaseSpace(LinacOptData):
         dt_slice = 4*self.St*self.slice_percent  # assume 6-sigma full bunch length
         slice_data = sorted_data[(sorted_data.t > self.Ct - dt_slice/2) &
                                  (sorted_data.t < self.Ct + dt_slice/2)]
-        print(self.slice_percent)
+
         if len(slice_data) < self._min_pars:
             raise ValueError("Too few particles ({}) in the slice data!".
                              format(len(slice_data)))
