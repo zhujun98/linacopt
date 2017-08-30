@@ -136,7 +136,7 @@ class PhaseSpace(LinacOptData):
         q_norm: int/float/None
             Charge per macro-particle. Only for Impact data.
         slice_percent: float
-            Percentage of particles for slice properties.
+            Percent of the slice bunch length to the total bunch length.
         cut_halo: None/float
             Percentage of particles to be removed based on their
             transverse distance to the bunch centroid. Applied
@@ -313,7 +313,7 @@ class PhaseSpace(LinacOptData):
         sorted_data = self.data.reindex(
             self.data['t'].abs().sort_values(ascending=True).index)
 
-        dt_slice = 4*self.St*self.slice_percent  # assume 6-sigma full bunch length
+        dt_slice = 4*self.St*self.slice_percent  # assume 4-sigma full bunch length
         slice_data = sorted_data[(sorted_data.t > self.Ct - dt_slice/2) &
                                  (sorted_data.t < self.Ct + dt_slice/2)]
 
