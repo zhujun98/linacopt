@@ -1,24 +1,8 @@
 #!/usr/bin/python
 
 """
-linacopt_fitpoints
 
-Hold the one class.
-
-    - FitPoints: hold attributes being PhaseSpace objects
-
-Tested on:
-__________
-Ubuntu 14.04
-Ubuntu 16.04
-
-Developer:
-__________
-- Jun Zhu
-
-History:
-________
-Last modified on 22/01/2017
+Author: Jun Zhu
 
 """
 import os

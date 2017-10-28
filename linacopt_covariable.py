@@ -1,22 +1,8 @@
 #!/usr/bin/python
 
 """
-linacopt_covariable
 
-Hold the CoVariable class.
-
-Tested on:
-__________
-Ubuntu 14.04
-Ubuntu 16.04
-
-Developer:
-__________
-- Jun Zhu
-
-History:
-________
-Last modified on 12/01/2017
+Author: Jun Zhu
 
 """
 

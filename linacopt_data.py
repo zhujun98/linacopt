@@ -1,26 +1,8 @@
 #!/usr/bin/python
 
 """
-linacopt_data.py
--------------
 
-Hold one class
-- LinacOptData
-    Base class for objects storing data.
-
-Developer:
-__________
-Jun Zhu
-
-Tested on:
-__________
-Ubuntu 14.04
-Ubuntu 16.04
-
-History:
-________
-
-Last modified on 02/02/2017
+Author: Jun Zhu
 
 """
 
@@ -44,6 +26,7 @@ class LinacOptData(object):
 
     @particle_type.setter
     def particle_type(self, value):
+        """Setter"""
         if re.search(r'^astra', value, re.IGNORECASE):
             self._particle_type = 'astra'
         elif re.search(r'^impact', value, re.IGNORECASE):

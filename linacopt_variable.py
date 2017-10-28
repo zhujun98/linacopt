@@ -1,21 +1,8 @@
 #!/usr/bin/python
 
 """
-linacopt_variable
 
-Hold the Variable class.
-
-Tested on:
-__________
-Ubuntu 14.04
-
-Developer:
-__________
-- Jun Zhu
-
-History:
-________
-Last modified on 24/01/2017
+Author: Jun Zhu
 
 """
 from pyOpt import Variable as pyOptVariable

@@ -8,8 +8,6 @@ Jun Zhu
 
 An object-oriented Python API for beam dynamics optimization with ASTRA and IMPACT-T.
 
-### Problem definition
-
 ```
 $$Minimize \; f(\mathbf{x}), \; \mathbf{x} = (x_1,...,x_n),$$
 where
@@ -17,10 +15,6 @@ $$x_{j,l} <= x_j <= x_{j,u}, \; i \in \{1,...,n\}$$
 with
 $$g_i(\mathbf{x})<=0, \; i \in \{1, ...,m\}.$$
 ```
-
-Examples can be found in:
-
-![](./class hierarchy.png)
 
 ## Dependencies
 
@@ -33,13 +27,14 @@ Examples can be found in:
 
 ## Installation
 
-### Windows
-- Download and install [Anaconda Python](https://www.continuum.io/downloads).
-- Install pyOpt
 - Download LinacOpt
 ```
   git clone http://github.com/zhujun98/LinacOpt.git
 ```
+
+### Windows
+- Download and install [Anaconda Python](https://www.continuum.io/downloads).
+- Install - [pyOpt](http://www.pyopt.org/)
 - Set your system environment
 ```
   export PYTHONPATH=your/path/for/LinacOpt/
@@ -49,13 +44,9 @@ Examples can be found in:
 
 ### Linux
 
-### Common features
+- Install [pyOpt](http://www.pyopt.org/)
 
-#### Modified pyOpt (not mandatory)
-
-alpso.py (location in the original package: pyopt/pyOpt/pyALPSO/alpso.py)
-
-The new file will let you know why the optimization converges and print out the value of the augmented Lagrangian term.
+Replace the default `pyopt/pyOpt/pyALPSO/alpso.py` with the new one (optional). The new file will let you know why the optimization converges and print out the value of the augmented Lagrangian term.
 
 ## Optimizers
 

@@ -1,28 +1,8 @@
 #!/usr/bin/python
 
 """
-linacopt_optimization
 
-Hold the new Optimization class:
-[1] Method names comply with PEP8;
-[2] Two new variables: co-variables and static variables;
-[3] add_* method can handle duplicity;
-[4] del_* method can deal with both index and name, it will also shift
-    forward the indices of rest items;
-[5] New layout in __str__ method.
-
-Tested on:
-__________
-Ubuntu 14.04
-pyOpt version 1.2.0
-
-Developer:
-__________
-- Jun Zhu
-
-History:
-________
-Last modified on 30/12/2016
+Author: Jun Zhu
 
 """
 from linacopt_variable import Variable

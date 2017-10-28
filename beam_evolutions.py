@@ -1,18 +1,16 @@
 #!/usr/bin/python
 
 """
-beam_evolutions
-
 Hold three classes:
 
-    - BeamEvolution:
-        Store and update the beam evolution and its statistics
+- BeamEvolution:
+    Store and update the beam evolution and its statistics
 
-    - BeamEvolutionParser
-        Read the beam evolution data from files.
+- BeamEvolutionParser
+    Read the beam evolution data from files.
 
-    - Stats
-        Store and update the statistics of a single variable
+- Stats
+    Store and update the statistics of a single variable
 
 Important note:
 _______________
@@ -22,16 +20,8 @@ big divergence angle, the result will be quite different from the
 true Twiss parameters. However, one can set TR_EmitS = .T in ASTRA to
 get the very-close Twiss parameters even in extreme conditions.
 
-Tested on:
-__________
-Ubuntu 14.04
-Ubuntu 16.04
 
-Developer:
-__________
-Jun Zhu
-
-Last modified on 01/02/2017
+Author: Jun Zhu
 
 """
 import os

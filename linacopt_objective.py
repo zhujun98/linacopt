@@ -1,21 +1,8 @@
 #!/usr/bin/python
 
 """
-linacopt_objective
 
-Hold the new Objective class.
-
-Tested on:
-__________
-Ubuntu 14.04
-
-Developer:
-__________
-- Jun Zhu
-
-History:
-________
-Last modified on 19/01/2016
+Author: Jun Zhu
 
 """
 from pyOpt import Objective as pyOptObjective

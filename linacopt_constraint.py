@@ -1,24 +1,11 @@
 #!/usr/bin/python
 
 """
-linacopt_constraint
-
-Hold the new Constraint class.
-
 Note: the lower and upper keyword arguments in the original Constraint
 class do not work!
 
-Tested on:
-__________
-Ubuntu 14.04
 
-Developer:
-__________
-- Jun Zhu
-
-History:
-________
-Last modified on 30/12/2016
+Author: Jun Zhu
 
 """
 from pyOpt import Constraint as pyOptConstraint

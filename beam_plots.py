@@ -1,29 +1,16 @@
 #!/usr/bin/python
 """
-
-beam_plots.py
-
 Hold two classes:
-    PhaseSpacePlot:
-        Plot the beam phase-space.
 
-    LinePlot:
-        Plot beam parameter evolutions along the beamline.
+- PhaseSpacePlot:
+    Plot the beam phase-space.
 
-Developer:
-__________
-Jun Zhu
+- LinePlot:
+    Plot beam parameter evolutions along the beamline.
 
 
-Tested on:
-__________
-Ubuntu 14.04
-Ubuntu 16.04
+Author: Jun Zhu
 
-
-Last modified on:
-__________
-24/01/2017
 
 TODO:
 - Include lattice in the line plot.

@@ -20,4 +20,4 @@ examples/astra_advanced/*
 !examples/astra_advanced/tws_cavity.dat
 examples/plots/*.png
 win_config.dat
-
+.Rhistory

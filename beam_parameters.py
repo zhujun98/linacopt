@@ -1,8 +1,6 @@
 #!/usr/bin/python
 
 """
-beam_parameters
-
 Hold two classes:
 
 - PhaseSpace
@@ -16,17 +14,8 @@ Note: In the calculation (except the canonical emittance), the
 particles are drifted back to the center of the bunch without
 considering the collective effects!!!
 
-Developer:
-__________
-Jun Zhu
 
-Tested on:
-__________
-Ubuntu 14.04
-Ubuntu 16.04
-
-History:
-________
+Author: Jun Zhu
 
 """
 import os

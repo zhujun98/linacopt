@@ -1,45 +1,32 @@
 #!/usr/bin/python
 
 """
-linac_Opt.py - A PYTHON script for optimizing linac.
+A PYTHON script for optimizing linac.
 
 Optimizers (SDPEN, ALPSO, NSGA2) in pyOpt are used in this
 script to solve general constrained nonlinear optimization problems:
 
-    min f(x) w.r.t. x
+min f(x) w.r.t. x
 
-    s.t. g_j(x) = 0, j = 1, ..., m_e
+s.t. g_j(x) = 0, j = 1, ..., m_e
 
-        g_j(x) <= 0, j = m_e + 1, ..., m
+    g_j(x) <= 0, j = m_e + 1, ..., m
 
-        x_i_L <= x_i <= x_i_U, i = 1, ..., n
+    x_i_L <= x_i <= x_i_U, i = 1, ..., n
 
-    where:
+where:
 
-        x is the vector of design variables;
-        f(x) is a nonlinear function;
-        g(x) is a linear or nonlinear function;
-        n is the number of design variables;
-        m_e is the number of equality constraints;
-        m is the total number of constraints (number of equality
-        constraints: m_i = m - m_e).
+    x is the vector of design variables;
+    f(x) is a nonlinear function;
+    g(x) is a linear or nonlinear function;
+    n is the number of design variables;
+    m_e is the number of equality constraints;
+    m is the total number of constraints (number of equality
+    constraints: m_i = m - m_e).
 
-Tested on:
-__________
-Ubuntu 14.04
-Ubuntu 16.04
 
-pyOpt version 1.2.0
+Author: Jun Zhu
 
-Developer:
-__________
-- Jun Zhu
-
-History:
-________
-
-version 1.00
-Last modified on 12/02/2017
 """
 import os
 import sys

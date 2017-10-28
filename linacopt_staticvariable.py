@@ -1,21 +1,8 @@
 #!/usr/bin/python
 
 """
-linacopt_staticvariable
 
-Hold the StaticVariable class
-
-Tested on:
-__________
-Ubuntu 14.04
-
-Developer:
-__________
-- Jun Zhu
-
-History:
-________
-Last modified on 30/12/2016
+Author: Jun Zhu
 
 """
 
