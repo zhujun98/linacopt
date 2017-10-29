@@ -8,13 +8,7 @@ Jun Zhu
 
 An object-oriented Python API for beam dynamics optimization with ASTRA and IMPACT-T.
 
-```
-$$Minimize \; f(\mathbf{x}), \; \mathbf{x} = (x_1,...,x_n),$$
-where
-$$x_{j,l} <= x_j <= x_{j,u}, \; i \in \{1,...,n\}$$
-with
-$$g_i(\mathbf{x})<=0, \; i \in \{1, ...,m\}.$$
-```
+<img src="./miscs/problem_definition.png"  style="width: 480px;"/>
 
 ## Dependencies
 
