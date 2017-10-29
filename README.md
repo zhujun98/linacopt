@@ -8,7 +8,7 @@ Jun Zhu
 
 An object-oriented Python API for beam dynamics optimization with ASTRA and IMPACT-T.
 
-<img src="./miscs/problem_definition.png"  style="width: 480px;"/>
+<img src="./miscs/problem_definition.png"  style="width: 360px;"/>
 
 ## Dependencies
 
