@@ -21,26 +21,22 @@ An object-oriented Python API for beam dynamics optimization with ASTRA and IMPA
 
 ## Installation
 
+### Ubuntu
 - Download LinacOpt
+```sh
+$ git clone http://github.com/zhujun98/LinacOpt.git
 ```
-  git clone http://github.com/zhujun98/LinacOpt.git
+- Add a line **export PYTHONPATH=your/path/for/linac_opt:$PYTHONPATH** to ~/.profile
+```sh
+source ~/.profile
 ```
-
-### Windows
-- Download and install [Anaconda Python](https://www.continuum.io/downloads).
-- Install - [pyOpt](http://www.pyopt.org/)
-- Set your system environment
-```
-  export PYTHONPATH=your/path/for/LinacOpt/
-```
-
-### MacOS
-
-### Linux
 
 - Install [pyOpt](http://www.pyopt.org/)
 
-Replace the default `pyopt/pyOpt/pyALPSO/alpso.py` with the new one (optional). The new file will let you know why the optimization converges and print out the value of the augmented Lagrangian term.
+### Windows
+
+### MacOS
+
 
 ## Optimizers
 
@@ -62,6 +58,8 @@ if (abs(global_distance[0]-global_distance[stopIters-1]) <= \
 - If the objective is a small number, one must change 'atol' otherwise the optimization will stop prematurely.
 
 - 'dynInnerIter' must be set to 1 in order to make minInnerIter take effect!
+
+- Replace the default `pyopt/pyOpt/pyALPSO/alpso.py` with the new one (optional). The new file will let you know why the optimization converges and print out the value of the augmented Lagrangian term.
 
 #### [Non Sorting Genetic Algorithm II](http://www.pyopt.org/reference/optimizers.nsga2.html#module-pyNSGA2)
 

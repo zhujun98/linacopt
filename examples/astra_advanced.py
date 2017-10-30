@@ -7,40 +7,58 @@ in the second one. Space-charge is switched off for speed.
 
 Several advanced setups are also shown here.
 
-The soluiton in the first step is 0.067 fs!!!
+The solution in the first step should be smaller than 0.1 fs!!!
 """
-import sys
-import os
-sys.path.append(os.path.expanduser('~') + "/myscripts/linac_opt/")
-
 from linac_opt import LinacOpt
 
 
-# *********************************************************************
 # ******************************Step 1*********************************
-# *********************************************************************
-
 # In the first step, the bunch length is going to be optimized with a
 # global optimizer, i.e. the initial values of the variables take no
 # effects.
+# *********************************************************************
 
-# ----------------------------
+def f1(fits):
+    """Define objective - final bunch length"""
+    print "rms bunch length: {:.2f} fs".format(fits.out.St*1.e15)
+    return fits.out.St*1.e15
+
+
+def g1(fits):
+    """Define constraint 1 - final emittance"""
+    return (fits.out.emitx + fits.out.emity)/2*1e6
+
+
+def g2(fits):
+    """Define constraint 2 - beam size at the slit"""
+    return fits.slit.Sx*1.e3
+
+
+def g3(fits, sections):
+    """Define constraint 3 - maximum beam size throughout the beamline
+
+    The second argument 'sections' refers to a section in the beamline,
+    and it can be the whole beam line. The statistic parameters in one
+    'section' can be used for optimization. See beam_evolutions.py.
+
+    Note: fits (fit points) must be the first argument!
+    """
+    return (sections.all.Sx.max + sections.all.Sy.max)/2*1.e3
+
+
+def g4(fits, sections):
+    """Define constraint 4 - average beta function inside TWS2"""
+    return (sections.tws2.betax.ave + sections.tws2.betay.ave)/2
+
+
 # Instantiate the optimization
-#
-# - By setting restart to 1, the optimizer will try to read the saved
-# result of the first step and directly start the second one.
-# - If you are running a very unstable optimization, i.e. there are
-# many crazy working points during the initial search, you may want
-# to increase the value of max_fail (default is 20).
 opt_test = LinacOpt(path_name='./astra_advanced',
                     input_file='injector.in',
                     input_template='injector.in.000',
                     particle_type='astra',
-                    prob_name='opt_test',
                     restart=None,
                     max_fail=100)
 
-# ---------------------------------------------
 # Set up the optimizer
 opt_test.set_optimizer('alpso')
 
@@ -57,68 +75,25 @@ opt_test.optimizer.setOption('w2', 0.40)
 opt_test.optimizer.setOption('c1', 2.0)
 opt_test.optimizer.setOption('c2', 2.0)
 
-
-# --------------
-# Add fit points
+# fit points
 opt_test.fit_points.set_point('out', 'injector.0620.001')
-# The beam parameters at the 'slit' will be calculated after
-# cutting 10% of the beam halo and then 10% of the beam tail.
-#
-# If you would like to use particle number as a constraint,
-# please use n0 which is the number of particles in the
-# original output file (before cutting), while n is the number
-# of particles after cutting.
 opt_test.fit_points.set_point('slit', 'injector.0029.001',
-                              cut_halo=0.1, cut_tail=0.1)
+                              cut_halo=0.1, cut_tail=0.1, rotate=20.0)
 
-
-# ------------
-# Add sections
-#
-# A section is the whole of a part of the beamline where
-# the statistics of a parameter can be used, e.g. Sx.max,
-# betax.ave, ...
-opt_test.sections.set_section('all')
-# 'tws2' is located between z = 4.0 ~ 6.0 m.
-opt_test.sections.set_section('tws2', z_lim=(4.0, 6.0))
-
-
-# -------------
-# Add objective
-def f1(fits):
-    """Final bunch length"""
-    print "rms bunch length: {:.2f} fs".format(fits.out.St*1.e15)
-    return fits.out.St*1.e15
+# objective
 opt_test.opt_prob.set_obj('St_fs', f1)
 
-# ---------------
-# Add constraints
-def g1(fits):
-    """Final emittance"""
-    return (fits.out.emitx + fits.out.emity)/2*1e6
+# sections
+opt_test.sections.set_section('all')
+opt_test.sections.set_section('tws2', z_lim=(4.0, 6.0))
+
+# constraints
 opt_test.opt_prob.set_con('emitxy_um', g1, upper=0.30)
-
-
-def g2(fits):
-    """Beam size at the slit"""
-    return fits.slit.Sx*1.e3
 opt_test.opt_prob.set_con('Sx_at_slit_mm', g2, upper=2.0)
-
-
-# fits (FitPoints object) must be the first argument!
-def g3(fits, sections):
-    """Maximum beam size throughout the beamline"""
-    return (sections.all.Sx.max + sections.all.Sy.max)/2*1.e3
 opt_test.opt_prob.set_con('max_Sxy_mm', g3, upper=10.0)
-
-
-def g4(fits, sections):
-    """Average beta function inside TWS2"""
-    return (sections.tws2.betax.ave + sections.tws2.betay.ave)/2
 opt_test.opt_prob.set_con('ave_betaxy_TWS2_m', g4, equal=30.0, tol=20.0)
 
-# ------------------------------------------------
-# Add variables, co-variables and static-variables
+# variables (global optimization, no need to set initial values)
 opt_test.opt_prob.set_var('laser_spot', lower=0.1, upper=0.5)
 opt_test.opt_prob.set_var('laser_duration', lower=0.0002, upper=0.001)
 opt_test.opt_prob.set_var('main_sole_b', lower=0.0, upper=0.4)
@@ -130,18 +105,16 @@ opt_test.opt_prob.set_var('gun_gradient', lower=0.0, upper=110.0)
 opt_test.opt_prob.set_var('tws1_gradient', lower=0.0, upper=30.0)
 opt_test.opt_prob.set_var('tws2_gradient', lower=0.0, upper=30.0)
 
-opt_test.opt_prob.set_covar('tws2_sole_b', 'tws1_sole_b', slope=1.0, intercept=0.0)
-# The value of a co- variable can be dependant on several variables.
-# opt_test.opt_prob.set_covar('tws2_sole_b', ('tws1_sole_b', 'tws1_sole_b'),
-#                             (1.0, 1.0), 0.0)
+# co-variables
+opt_test.opt_prob.set_covar('tws2_sole_b', 'tws1_sole_b', 1.0, 0.0)
 
-opt_test.opt_prob.set_staticvar('charge', 0.010)  # 10 pC
+# static-variables
+opt_test.opt_prob.set_staticvar('charge', 0.010)
 opt_test.opt_prob.set_staticvar('hmax', 0.005)
 opt_test.opt_prob.set_staticvar('hmin', 0.00005)
 opt_test.opt_prob.set_staticvar('nrad', 16)
 opt_test.opt_prob.set_staticvar('nlong', 32)
 
-# --------------------
 # Run the optimization
 #
 # The parallel version of ASTRA will get stuck sometimes when a lot
@@ -149,16 +122,17 @@ opt_test.opt_prob.set_staticvar('nlong', 32)
 # (assuming usually one iteration takes 3 seconds). However, the
 # optimization will continue. Both the shell command and the time_out
 # will be inherited by the following optimizations.
-opt_test.solve('astra', time_out=5)
-# The above two inputs is equivalent to
-# opt_test.solve('timeout 10s astra injector.in >/dev/null', complete_shell=True)
+opt_test.solve('mpirun -np 2 astra_r62_Linux_x86_64_OpenMPI_1.6.1', time_out=5)
 
 
-# *********************************************************************
 # ******************************Step 2*********************************
-# *********************************************************************
 
-# ----------------
+
+def f2(fits):
+    """Define new objective"""
+    print (fits.out.emitx + fits.out.emitx)*1.e6/2
+    return (fits.out.emitx + fits.out.emitx)*1.e6/2
+
 # Change optimizer
 #
 # In the second step, the optimizer is set to the local search optimizer
@@ -168,24 +142,15 @@ opt_test.solve('astra', time_out=5)
 opt_test.set_optimizer('sdpen')
 opt_test.optimizer.setOption('alfa_stop', 1e-3)
 
-# ----------------
 # Change objective
-def f2(fits):
-    print (fits.out.emitx + fits.out.emitx)*1.e6/2
-    return (fits.out.emitx + fits.out.emitx)*1.e6/2
 opt_test.opt_prob.set_obj('emit_um', f2)
 opt_test.opt_prob.del_obj('St_fs')
 
-
-# ----------------------
 # Add another constraint
 opt_test.opt_prob.set_con('St_fs', f1, upper=0.1)
 
-# ------------------------------------
 # Change variables to static variables
-#
-# Remove variables to which the bunch length is sensitive.
-# You can also skip this step.
+# Remove variables to which the bunch length is sensitive. (You can also skip this step)
 opt_test.opt_prob.set_staticvar('gun_phase')
 opt_test.opt_prob.set_staticvar('tws1_phase')
 opt_test.opt_prob.set_staticvar('tws2_phase')
@@ -193,6 +158,5 @@ opt_test.opt_prob.set_staticvar('gun_gradient')
 opt_test.opt_prob.set_staticvar('tws1_gradient')
 opt_test.opt_prob.set_staticvar('tws2_gradient')
 
-# ---------------------------------
 # Run the local search optimization
 opt_test.solve()
