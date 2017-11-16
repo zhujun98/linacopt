@@ -571,7 +571,7 @@ class PhaseSpaceParser(object):
 
         charge = -1e-9 * data['charge'].sum()
 
-        data.drop(['charge', 'index', 'flag', 'p'], inplace=True, axis=1)
+        data.drop(['charge', 'index', 'flag'], inplace=True, axis=1)
 
         return data, charge
 
@@ -603,7 +603,7 @@ class PhaseSpaceParser(object):
         data['t'] = -(data['z'] - data['z'].mean()) \
                     / (V_LIGHT * data['pz'] / np.sqrt(data['p'] ** 2 + 1))
 
-        data.drop(['p'], inplace=True, axis=1)
+        # data.drop(['p'], inplace=True, axis=1)
 
         return data
 
