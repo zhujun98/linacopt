@@ -111,7 +111,8 @@ class PhaseSpace(LinacOptData):
     """
     def __init__(self, particle_file, particle_type, charge=None, q_norm=None,
                  slice_percent=0.1, cut_halo=None, cut_tail=None, rotate=None,
-                 current_bins='auto', filter_size=1, min_pars=5, opt=False):
+                 current_bins='auto', filter_size=1, min_pars=5, opt=False,
+                 slice_with_peak_current=True):
         """
         Parameters
         ----------
@@ -131,8 +132,7 @@ class PhaseSpace(LinacOptData):
             transverse distance to the bunch centroid. Applied
             before tail cutting.
         cut_tail: None/float
-            Percentage of particles to be removed based on their
-            longitudinal distance to the bunch centroid.
+            Percentage of particles to be removed in the tail.
         rotate: None/float
             Apply rotation (in degree) to the phasespace.
         current_bins: int/'auto'
@@ -146,6 +146,10 @@ class PhaseSpace(LinacOptData):
             True for the initialization of the fit-points in linac_opt.
             Since there is no output, an error will occur if the update
             method is called. Default is False.
+        use_slice_with_peak_current: Boolean
+            True for calculating slice properties of the slice with peak
+            current; False for calculating slice properties of the slice
+            in the center of the bunch.
         """
         self.particle_file = os.path.join(os.getcwd(), particle_file)
         self._min_pars = min_pars
@@ -202,6 +206,8 @@ class PhaseSpace(LinacOptData):
         self.Cy = None
         self.Cyp = None
         self.Ct = None
+
+        self.slice_with_peak_current = slice_with_peak_current
 
         if not opt:
             self.update()
@@ -302,9 +308,14 @@ class PhaseSpace(LinacOptData):
         sorted_data = self.data.reindex(
             self.data['t'].abs().sort_values(ascending=True).index)
 
+        if self.slice_with_peak_current is True:
+            Ct_slice = centers[np.argmax(current)]
+        else:
+            Ct_slice = self.Ct
+
         dt_slice = 4*self.St*self.slice_percent  # assume 4-sigma full bunch length
-        slice_data = sorted_data[(sorted_data.t > self.Ct - dt_slice/2) &
-                                 (sorted_data.t < self.Ct + dt_slice/2)]
+        slice_data = sorted_data[(sorted_data.t > Ct_slice - dt_slice/2) &
+                                 (sorted_data.t < Ct_slice + dt_slice/2)]
 
         if len(slice_data) < self._min_pars:
             raise ValueError("Too few particles ({}) in the slice data!".
@@ -609,16 +620,16 @@ class PhaseSpaceParser(object):
 
 
 if __name__ == "__main__":
-    # Test
     ps_astra = PhaseSpace('examples/plots/injector.0400.001', 'astra')
     print '-'*80 + "\nParameters for {}:\n".format(ps_astra.particle_file)
     print ps_astra
     ps_astra.output_params()
 
     ps_impact = PhaseSpace('examples/plots/fort.140', 'impact',
-                           charge=1.0e-12, q_norm=None, cut_tail=0.0, rotate=30,
-                           cut_halo=0.0, current_bins=128, filter_size=2,
-                           slice_percent=0.1, min_pars=10)
+                           charge=17.7e-12, q_norm=None, cut_tail=0.00, rotate=0,
+                           cut_halo=0.0, current_bins='auto', filter_size=1,
+                           slice_percent=0.1, min_pars=10,
+                           slice_with_peak_current=True)
     ps_impact.update()
     print '-'*80 + "\nParameters for {}:\n".format(ps_impact.particle_file)
     print ps_impact
