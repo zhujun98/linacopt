@@ -489,7 +489,9 @@ class PhaseSpace(LinacOptData):
 
     def __str__(self):
         """"""
-        text = "{:16}    {:16}    {:16}    {:16}\n". \
+        text = "cutTail = {}, cutHalo = {}, rotate = {}\n\n". \
+            format(self.cut_tail, self.cut_halo, self.rotate)
+        text += "{:16}    {:16}    {:16}    {:16}\n". \
             format('n', 'charge (C)', 'p', 'I_peak (A)')
         text += "{:16.4e}    {:16.4e}    {:16.4e}    {:16.4e}\n\n". \
             format(self.n, self.charge, self.p, self.I_peak)
@@ -626,7 +628,7 @@ if __name__ == "__main__":
     ps_astra.output_params()
 
     ps_impact = PhaseSpace('examples/plots/fort.140', 'impact',
-                           charge=17.7e-12, q_norm=None, cut_tail=0.00, rotate=0,
+                           charge=17.7e-12, q_norm=None, cut_tail=0.0, rotate=0.0,
                            cut_halo=0.0, current_bins='auto', filter_size=1,
                            slice_percent=0.1, min_pars=10,
                            slice_with_peak_current=True)
