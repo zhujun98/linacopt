@@ -12,16 +12,22 @@ An object-oriented Python API for beam dynamics optimization with ASTRA and IMPA
 
 ## Dependencies
 
-- Python2 > 2.7.6
-- NumPy, Pandas, Scipy, matplotlib(only for visualization)
+- Python3 > 3.5
+- NumPy, Pandas, Scipy, matplotlib (only for visualization)
 - psutil
-- [pyOpt](http://www.pyopt.org/)
+- [pyOpt](http://www.pyopt.org/) > 1.2.0
 - [ASTRA](http://www.desy.de/~mpyflo/)
 - [IMPACT-T](http://portal.nersc.gov/project/m669/IMPACT-T/)
 
 ## Installation
 
 ### Ubuntu
+- Download and install pyOpt
+```sh
+$ git clone https://github.com/zhujun98/pyOpt
+$ python setup.py install
+```
+
 - Download LinacOpt
 ```sh
 $ git clone http://github.com/zhujun98/LinacOpt.git
@@ -30,8 +36,6 @@ $ git clone http://github.com/zhujun98/LinacOpt.git
 ```sh
 source ~/.profile
 ```
-
-- Install [pyOpt](http://www.pyopt.org/)
 
 ### Windows
 
@@ -44,22 +48,7 @@ source ~/.profile
 
 #### [Augmented Lagrangian Particle Swarm Optimizer](http://www.pyopt.org/reference/optimizers.alpso.html#module-pyALPSO)
 
-- Convergence condition:
 
-```
-if (abs(global_distance[0]-global_distance[stopIters-1]) <= \
-    dtol*abs(global_distance[stopIters-1]) and \
-    abs(global_L[0]-global_L[stopIters-1]) <= \
-    rtol*abs(global_L[stopIters-1]) or \
-    abs(global_L[0]-global_L[stopIters-1]) <= atol):
-    stop_criteria_flag = 1
-```
-
-- If the objective is a small number, one must change 'atol' otherwise the optimization will stop prematurely.
-
-- 'dynInnerIter' must be set to 1 in order to make minInnerIter take effect!
-
-- Replace the default `pyopt/pyOpt/pyALPSO/alpso.py` with the new one (optional). The new file will let you know why the optimization converges and print out the value of the augmented Lagrangian term.
 
 #### [Non Sorting Genetic Algorithm II](http://www.pyopt.org/reference/optimizers.nsga2.html#module-pyNSGA2)
 

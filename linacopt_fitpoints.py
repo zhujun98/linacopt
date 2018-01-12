@@ -15,10 +15,6 @@ class FitPoints(object):
     def __init__(self, particle_type):
         self.particle_type = particle_type
 
-    def add_point(self, *args, **kwargs):
-        print("Deprecated! Please use set_point method")
-        self.set_point(*args, **kwargs)
-
     def set_point(self, name, particle_file, particle_type=None, **kwargs):
         """Add a PhaseSpace object as an attribute
 
@@ -34,8 +30,8 @@ class FitPoints(object):
         Additional keyword arguments are passed to PhaseSpace.__init__()
         """
         try:
-            super(FitPoints, self).__delattr__(name)
-            print "\nWarning: point {} will be replaced!".format(name)
+            super().__delattr__(name)
+            print("\nWarning: point {} will be replaced!".format(name))
         except AttributeError:
             pass
 
@@ -43,7 +39,7 @@ class FitPoints(object):
             particle_type = self.particle_type
 
         this_point = PhaseSpace(particle_file, particle_type, opt=True, **kwargs)
-        super(FitPoints, self).__setattr__(name, this_point)
+        super().__setattr__(name, this_point)
 
     def del_point(self, name):
         """Delete a point by name.
@@ -53,11 +49,11 @@ class FitPoints(object):
         name: string
             Name of the new attribute.
         """
-        super(FitPoints, self).__delattr__(name)
+        super().__delattr__(name)
 
     def update(self, **kwargs):
         """Update all the attributes which are PhaseSpace objects"""
-        for value in self.__dict__.values():
+        for value in list(self.__dict__.values()):
             if isinstance(value, PhaseSpace):
                 value.update(**kwargs)
 
@@ -67,7 +63,7 @@ class FitPoints(object):
 
         text += '  {:18}  {:16}  {:12}  {:12}  {:12}\n'.format(
             'Name', 'File', 'Type', 'Cut halo', 'Cut tail')
-        for key, value in self.__dict__.iteritems():
+        for key, value in self.__dict__.items():
             if isinstance(value, PhaseSpace):
                 text += '  {:18}  {:16}  {:12}  {:12}  {:12}\n'.format(
                     key, os.path.basename(value.particle_file), value.particle_type,

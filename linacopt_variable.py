@@ -25,7 +25,7 @@ class Variable(pyOptVariable):
         lower: int/float
             Lower boundary.
         """
-        super(Variable, self).__init__(name, **kwargs)
+        super().__init__(name, **kwargs)
 
     def __str__(self):
         """Print structured list of variables

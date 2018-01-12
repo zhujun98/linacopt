@@ -3,7 +3,7 @@
     Head='test for linac optimization'
     RUN = 1
     Distribution = 'Radial500_1G3ps.ini'
-    Qbunch = 0.02 
+    Qbunch = 0.02
     XYrms = <laser_spot>
     Trms = 0.003
     TRACK_ALL = .T 
@@ -19,7 +19,7 @@
 &OUTPUT
     ZSTART = 0.0 
     ZSTOP = 4.0
-    Zemit = 500
+    Zemit = 100
     Zphase = 1 
     High_res = .T
     Local_emit = .F
@@ -40,11 +40,11 @@
 
 &CHARGE 
     LSPCH = .T
-    Max_scale = 0.05
-    Max_Count = 40
+    Max_scale = 0.1
+    Max_Count = 100
     Exp_Control = 0.1
     Nrad = 16
-    Nlong_in = 32
+    Nlong_in = 16
     Lmirror = .F
     Cell_var = 2.0
     min_grid = 0.0  

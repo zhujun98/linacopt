@@ -146,7 +146,7 @@ class LinacOpt(LinacOptData):
         # input_template file will only be read once.
         self._input_template_lines = open(input_template).readlines()
 
-        super(LinacOpt, self).__init__(particle_type)
+        super().__init__(particle_type)
 
         self._prob_name = prob_name
         self.name = prob_name + '-' + datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
@@ -267,8 +267,8 @@ class LinacOpt(LinacOptData):
             except IndexError:
                 pass
 
-            print("\n" + "*"*80 + "\n" + "Read the solution set from {}\n".
-                  format(pickle_file) + "*"*80 + "\n")
+            print(("\n" + "*"*80 + "\n" + "Read the solution set from {}\n".
+                  format(pickle_file) + "*"*80 + "\n"))
 
             self._n_restart += 1
             return
@@ -278,10 +278,10 @@ class LinacOpt(LinacOptData):
             existing_sol_files = glob(self._prob_name + '.sol.*')
             for this_file in existing_log_files:
                 os.remove(this_file)
-                print("File removed: {}".format(this_file))
+                print(("File removed: {}".format(this_file)))
             for this_file in existing_sol_files:
                 os.remove(this_file)
-                print("File removed: {}".format(this_file))
+                print(("File removed: {}".format(this_file)))
 
         if run_code is not None:
             self.run_code = run_code
@@ -293,13 +293,13 @@ class LinacOpt(LinacOptData):
         self.log_file = self._prob_name + '.log.{:03d}'.format(self._n_restart)
         self.solution_file = self._prob_name + '.sol.{:03d}'.format(self._n_restart)
 
-        print "\n{}".format('*'*80)
-        print "Start solving the following problem with " + \
+        print("\n{}".format('*'*80))
+        print("Start solving the following problem with " + \
               "pyOpt.{} on \n{} {}".format(self._optimizer_name.upper(),
-                                           self.run_code, self.input_file)
-        print "{}".format('*'*80)
+                                           self.run_code, self.input_file))
+        print("{}".format('*'*80))
 
-        print self.opt_prob, self.fit_points, self.sections
+        print(self.opt_prob, self.fit_points, self.sections)
 
         t0 = datetime.now()
 
@@ -309,9 +309,9 @@ class LinacOpt(LinacOptData):
 
         self._time_consumption = datetime.now() - t0
 
-        print self._solution_text()
+        print(self._solution_text())
 
-        with open(self.solution_file, 'wb') as fp:
+        with open(self.solution_file, 'w') as fp:
             fp.write(self._solution_text())
 
         # Store objects for continuous runs
@@ -337,26 +337,26 @@ class LinacOpt(LinacOptData):
         Update the values of the attributes in the Optimization object.
         """
         last_sol_key = max(self.opt_prob.getSolSet().keys())
-        for key, item in self.opt_prob.getSolSet()[last_sol_key].getVarSet().iteritems():
+        for key, item in self.opt_prob.getSolSet()[last_sol_key].getVarSet().items():
             self.opt_prob.get_varset()[key].value = item.value
             self._x[key] = item.value
 
         self._update_covar()
-        for key in self.opt_prob.get_covarset().keys():
+        for key in list(self.opt_prob.get_covarset().keys()):
             self.opt_prob.get_covarset()[key].value = self._xc[key]
 
         self._update_input()
         self._run_simulation()
 
         self._update_output()
-        for key in self.opt_prob.get_objset().keys():
+        for key in list(self.opt_prob.get_objset().keys()):
             self.opt_prob.get_objset()[key].value = self._f[key]
-        for key in self.opt_prob.get_conset().keys():
+        for key in list(self.opt_prob.get_conset().keys()):
             self.opt_prob.get_conset()[key].value = self._g[key]
 
         # Compare the result of pyOpt and the last simulation.
         tol = 1.0e-6
-        for key in self.opt_prob.getSolSet()[last_sol_key].getObjSet().keys():
+        for key in list(self.opt_prob.getSolSet()[last_sol_key].getObjSet().keys()):
             old = self.opt_prob.getSolSet()[last_sol_key].getObjSet()[key].value
             new = self._f2pyopt[key]
             assert abs(new - old) < tol*max(abs(new), abs(old)), \
@@ -384,15 +384,15 @@ class LinacOpt(LinacOptData):
         # dt_code = (datetime.now() - t0_code).total_seconds()
         # print dt_code
 
-        nobj = len(self.opt_prob.get_objset().values())
-        ncon = len(self.opt_prob.get_conset().values())
+        nobj = len(list(self.opt_prob.get_objset().values()))
+        ncon = len(list(self.opt_prob.get_conset().values()))
         try:
             self._update_output()
             self._n_fail = 0
             fail = 0
 
         except (IOError, ValueError) as e:
-            print str(e)
+            print(str(e))
             self._f = [INF]*nobj
             self._f2pyopt = [INF]*nobj
             self._g = [INF]*ncon
@@ -423,7 +423,7 @@ class LinacOpt(LinacOptData):
 
         self._f = []
         self._f2pyopt = []
-        for obj in self.opt_prob.get_objset().values():
+        for obj in list(self.opt_prob.get_objset().values()):
             try:
                 obj.update(self.fit_points, self.sections)
             except TypeError:
@@ -434,7 +434,7 @@ class LinacOpt(LinacOptData):
 
         self._g = []
         self._g2pyopt = []
-        for con in self.opt_prob.get_conset().values():
+        for con in list(self.opt_prob.get_conset().values()):
             try:
                 con.update(self.fit_points, self.sections)
             except TypeError:
@@ -446,13 +446,13 @@ class LinacOpt(LinacOptData):
     def _update_covar(self):
         """Update the co-variables."""
         xc = []
-        for covar in self.opt_prob.get_covarset().values():
+        for covar in list(self.opt_prob.get_covarset().values()):
             x_ii = 0
             jj = 0
             for name in covar.var_dp:
                 flag = False
 
-                for ii, var in self.opt_prob.get_varset().iteritems():
+                for ii, var in self.opt_prob.get_varset().items():
                     if name == var.name:
                         x_ii += covar.slope[jj] * self._x[ii]
                         flag = True
@@ -501,7 +501,7 @@ class LinacOpt(LinacOptData):
 
                     ptn = line[line.find('<')+1:line.find('>')]
                     find_ptn = 0
-                    for ii, var in self.opt_prob.get_varset().iteritems():
+                    for ii, var in self.opt_prob.get_varset().items():
                         if find_ptn == 1:
                             break
                         if ptn == var.name:
@@ -509,14 +509,14 @@ class LinacOpt(LinacOptData):
                                                 str(self._x[ii]), 1)
                             find_ptn = 1
 
-                    for ii, covar in self.opt_prob.get_covarset().iteritems():
+                    for ii, covar in self.opt_prob.get_covarset().items():
                         if find_ptn == 1:
                             break
                         if ptn == covar.name:
                             line = line.replace('<' + ptn + '>', str(self._xc[ii]), 1)
                             find_ptn = 1
 
-                    for ii, staticvar in self.opt_prob.get_staticvarset().iteritems():
+                    for ii, staticvar in self.opt_prob.get_staticvarset().items():
                         if find_ptn == 1:
                             break
                         if ptn == staticvar.name:
@@ -532,31 +532,31 @@ class LinacOpt(LinacOptData):
                 fp.write(line)
 
         # Looking for unused variables
-        for var in self.opt_prob.get_varset().values():
+        for var in list(self.opt_prob.get_varset().values()):
             if var.name not in ptns:
                 raise ValueError("Variable '{}' is not found in the input file!"
                                  .format(var.name))
 
-        for covar in self.opt_prob.get_covarset().values():
+        for covar in list(self.opt_prob.get_covarset().values()):
             if covar.name not in ptns:
                 raise ValueError("Co-variable '{}' is not found in the input file!"
                                  .format(covar.name))
 
-        for staticvar in self.opt_prob.get_staticvarset().values():
+        for staticvar in list(self.opt_prob.get_staticvarset().values()):
             if staticvar.name not in ptns:
                 raise ValueError("Static-variable '{}' is not found in the input file!"
                                  .format(staticvar.name))
 
     def _remove_output_files(self):
         """Remove files generated in each simulation"""
-        for value in self.fit_points.__dict__.values():
+        for value in list(self.fit_points.__dict__.values()):
             if isinstance(value, PhaseSpace):
                 try:
                     os.remove(value.particle_file)
                 except OSError:
                     pass
 
-        for value in self.sections.__dict__.values():
+        for value in list(self.sections.__dict__.values()):
             if isinstance(value, BeamEvolution):
                 if value.particle_type == 'astra':
                     for suffix in ['.Xemit.001', '.Yemit.001', '.Zemit.001', '.TRemit.001']:
@@ -566,7 +566,7 @@ class LinacOpt(LinacOptData):
                             pass
                 elif value.particle_type == 'impact':
                     for suffix in ['.18', '.24', '.25', '.26']:
-                        print value.root_name
+                        print(value.root_name)
                         try:
                             os.remove(value.root_name + suffix)
                         except OSError:
@@ -602,30 +602,30 @@ class LinacOpt(LinacOptData):
     def _write_history(self, dt):
         """Save the optimization history to a log file."""
         if self._n_iter == 1:
-            with open(self.log_file, 'wb') as fp:
+            with open(self.log_file, 'w') as fp:
                 fp.write(self.opt_prob.name
-                         + ', optimizer = {}'.format(self._optimizer_name)
-                         + ', nrestart = {}'.format(self._n_restart)
-                         + '\n\n')
+                         + ", optimizer = {}".format(self._optimizer_name)
+                         + ", nrestart = {}".format(self._n_restart)
+                         + "\n\n")
 
-                fp.write('{:>6}, {:>12}'.format('niter', 'runtime (s)'))
+                fp.write("{:>6}, {:>12}".format('niter', 'runtime (s)'))
 
-                for obj in self.opt_prob.get_objset().values():
+                for obj in list(self.opt_prob.get_objset().values()):
                     fp.write(", {:>16}".format(obj.name))
 
-                for con in self.opt_prob.get_conset().values():
+                for con in list(self.opt_prob.get_conset().values()):
                     fp.write(", {:>16}".format(con.name))
 
-                for var in self.opt_prob.get_varset().values():
+                for var in list(self.opt_prob.get_varset().values()):
                     fp.write(", {:>16}".format(var.name))
 
-                for covar in self.opt_prob.get_covarset().values():
+                for covar in list(self.opt_prob.get_covarset().values()):
                     fp.write(", {:>16}".format(covar.name))
 
-                for staticvar in self.opt_prob.get_staticvarset().values():
+                for staticvar in list(self.opt_prob.get_staticvarset().values()):
                     fp.write(", {:>16}".format(staticvar.name))
 
-                fp.write('\n')
+                fp.write("\n")
 
         with open(self.log_file, 'a') as fp:
             fp.write('{:6d}, {:12.4f}'.format(self._n_iter, dt))
@@ -642,9 +642,9 @@ class LinacOpt(LinacOptData):
             for ele in self._xc:
                 fp.write(', {:16.6e}'.format(ele))
 
-            if self.opt_prob.get_staticvarset().keys():
+            if list(self.opt_prob.get_staticvarset().keys()):
                 staticvar_values = [staticvar.value for staticvar in
-                                    self.opt_prob.get_staticvarset().values()]
+                                    list(self.opt_prob.get_staticvarset().values())]
                 for ele in staticvar_values:
                     fp.write(', {:16.6e}'.format(ele))
 
@@ -660,24 +660,3 @@ class LinacOpt(LinacOptData):
         ftext += self.sections.__str__()
 
         return ftext
-
-
-def quad_k2g(k, p):
-    """Convert the K value of a quadrupole to gradient.
-
-    Parameters
-    ----------
-    k: float
-        Quadrupole strength (1/m^2)
-    p: float
-        Normalized momentum
-
-    Returns
-    -------
-    Quadrupole gradient (T/m)
-    """
-    me = 9.10938291e-31
-    v_light = 299792458
-    qe = 1.60217657e-19
-
-    return -1.0*k*p*me*v_light/qe

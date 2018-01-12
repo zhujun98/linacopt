@@ -14,7 +14,6 @@ class Objective(pyOptObjective):
     Each Objective object has a function attribute which calculates
     its value.
     """
-
     def __init__(self, name, func=None, optimum=-1.0e21):
         """Initialize Objective object
 

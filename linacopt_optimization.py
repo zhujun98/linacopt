@@ -21,11 +21,7 @@ class Optimization(pyOpt.Optimization):
         self._covariables = {}
         self._staticvariables = {}
 
-        super(Optimization, self).__init__(name, obj_fun, *args, **kwargs)
-
-    def add_obj(self, *args, **kwargs):
-        print("Deprecated! Please use set_obj method")
-        self.set_obj(*args, **kwargs)
+        super().__init__(name, obj_fun, *args, **kwargs)
 
     def set_obj(self, *args, **kwargs):
         """Add a objective into the objective set"""
@@ -69,10 +65,6 @@ class Optimization(pyOpt.Optimization):
         """Get the objective set"""
         return self._objectives
 
-    def add_con(self, *args, **kwargs):
-        print("Deprecated! Please use set_con method")
-        self.set_con(*args, **kwargs)
-
     def set_con(self, *args, **kwargs):
         """Add a constraint into the constraint set"""
         i = self.firstavailableindex(self._constraints)
@@ -115,10 +107,6 @@ class Optimization(pyOpt.Optimization):
         """Get the constraint set"""
         return self._constraints
 
-    def add_var(self, *args, **kwargs):
-        print("Deprecated! Please use set_var method")
-        self.set_var(*args, **kwargs)
-
     def set_var(self, *args, **kwargs):
         """Add a variable into the variable set"""
         i = self.firstavailableindex(self._variables)
@@ -138,8 +126,8 @@ class Optimization(pyOpt.Optimization):
         if ii >= 0:
             self._variables[i].value = self._covariables[ii].value
             self.del_covar(ii)
-            print "\n{} was changed from co-variable to variable!". \
-                format(self._variables[i].name)
+            print("\n{} was changed from co-variable to variable!".
+                  format(self._variables[i].name))
 
         # Try to inherit the value from the static variable set.
         ii = self._find_index_by_name(self._variables[i].name,
@@ -147,8 +135,8 @@ class Optimization(pyOpt.Optimization):
         if ii >= 0:
             self._variables[i].value = self._staticvariables[ii].value
             self.del_staticvar(ii)
-            print "\n{} was changed from static variable to variable!".\
-                format(self._variables[i].name)
+            print("\n{} was changed from static variable to variable!".
+                  format(self._variables[i].name))
 
         self._remove_duplicity(self._variables, i)
 
@@ -179,10 +167,6 @@ class Optimization(pyOpt.Optimization):
         """Get the variable set"""
         return self._variables
 
-    def add_covar(self, *args, **kwargs):
-        print("Deprecated! Please use set_covar method")
-        self.set_covar(*args, **kwargs)
-
     def set_covar(self, *args, **kwargs):
         """Add a co-variable into the co-variable set"""
         i = self.firstavailableindex(self._covariables)
@@ -200,19 +184,19 @@ class Optimization(pyOpt.Optimization):
         # they will lose their values in the last optimization.
         try:
             self.del_var(self._covariables[i].name)
-            print "\n{} was changed from variable to co-variable!". \
-                format(self._covariables[i].name)
-            print "Warning: changing variable to co-variable may lose "\
-                  "the optimized result!\n"
+            print("\n{} was changed from variable to co-variable!".
+                  format(self._covariables[i].name))
+            print("Warning: changing variable to co-variable may lose "\
+                  "the optimized result!\n")
         except ValueError:
             pass
 
         try:
             self.del_staticvar(self._covariables[i].name)
-            print "\n{} was changed from static variable to co-variable!". \
-                format(self._covariables[i].name)
-            print "Warning: changing static variable to co-variable may lose "\
-                  "the optimized result!\n"
+            print("\n{} was changed from static variable to co-variable!".
+                  format(self._covariables[i].name))
+            print("Warning: changing static variable to co-variable may lose "\
+                  "the optimized result!\n")
         except ValueError:
             pass
 
@@ -245,10 +229,6 @@ class Optimization(pyOpt.Optimization):
         """Get co-variable set"""
         return self._covariables
 
-    def add_staticvar(self, *args, **kwargs):
-        print("Deprecated! Please use set_staticvar method")
-        self.set_staticvar(*args, **kwargs)
-
     def set_staticvar(self, *args, **kwargs):
         """Add a static variable into the static variable set"""
         i = self.firstavailableindex(self._staticvariables)
@@ -268,8 +248,8 @@ class Optimization(pyOpt.Optimization):
         if ii >= 0:
             self._staticvariables[i].value = self._variables[ii].value
             self.del_var(ii)
-            print "\n{} was changed from variable to static variable!\n". \
-                format(self._staticvariables[i].name)
+            print("\n{} was changed from variable to static variable!\n".
+                  format(self._staticvariables[i].name))
 
         # Try to inherit the value from the co-variable set.
         ii = self._find_index_by_name(self._staticvariables[i].name,
@@ -277,8 +257,8 @@ class Optimization(pyOpt.Optimization):
         if ii >= 0:
             self._staticvariables[i].value = self._covariables[ii].value
             self.del_covar(ii)
-            print "\n{} was changed from co-variable to static variable!\n". \
-                format(self._staticvariables[i].name)
+            print("\n{} was changed from co-variable to static variable!\n".
+                  format(self._staticvariables[i].name))
 
         if self._staticvariables[i].value is None:
             raise ValueError("Unknown value of static variable: {}".
@@ -330,7 +310,7 @@ class Optimization(pyOpt.Optimization):
         item with index i, the i-th item is set equal to the ii-th item
         and the latter is then removed.
         """
-        for i, item in dict_.iteritems():
+        for i, item in dict_.items():
             if i != ii and item.name == dict_[ii].name:
                 dict_[i] = dict_[ii]
                 del dict_[ii]
@@ -340,7 +320,7 @@ class Optimization(pyOpt.Optimization):
     def _find_index_by_name(name, dict_):
         """Return the index of object with object.name == name"""
         index = -1
-        for key, ele in dict_.iteritems():
+        for key, ele in dict_.items():
             if name == ele.name:
                 index = key
 
@@ -359,37 +339,37 @@ class Optimization(pyOpt.Optimization):
                 "  {:18}  {:11}  {:11}  {:16}\n"\
                 .format('Name', 'Value', 'Optimum', 'Function')
 
-        for index in self._objectives.keys():
+        for index in list(self._objectives.keys()):
             lines = str(self._objectives[index]).split('\n')
             text += lines[1] + '\n'
 
-        if len(self._constraints.keys()) > 0:
+        if len(list(self._constraints.keys())) > 0:
             text += "\nConstraints:\n"\
                     "  {:18}  {:11}  {:48}\n"\
                     .format('Name', 'Value', 'Bound')
-            for index in self._constraints.keys():
+            for index in list(self._constraints.keys()):
                 lines = str(self._constraints[index]).split('\n')
                 text += lines[1] + '\n'
 
         text += "\nVariables (c - continuous, i - integer, d - discrete):\n"\
                 "  {:18}  {:6}  {:11}  {:11}  {:11}\n"\
                 .format('Name', 'Type', 'Value', 'Lower Bound', 'Upper Bound')
-        for index in self._variables.keys():
+        for index in list(self._variables.keys()):
             lines = str(self._variables[index]).split('\n')
             text += lines[1] + '\n'
 
-        if len(self._covariables.keys()) > 0:
+        if len(list(self._covariables.keys())) > 0:
             text += "\nCo-variables:\n"\
                     "  {:18}  {:16}  {:11}  {:11}\n"\
                     .format('Name', 'Dependent(s)', 'Slope(s)', 'Intercept')
-            for index in self._covariables.keys():
+            for index in list(self._covariables.keys()):
                 lines = str(self._covariables[index]).split('\n')
                 text += lines[1] + '\n'
 
-        if len(self._staticvariables.keys()) > 0:
+        if len(list(self._staticvariables.keys())) > 0:
             text += "\nStatic variables:\n"\
                     "  {:18}  {:11}\n".format('Name', 'Value')
-            for index in self._staticvariables.keys():
+            for index in list(self._staticvariables.keys()):
                 lines = str(self._staticvariables[index]).split('\n')
                 text += lines[1] + '\n'
 

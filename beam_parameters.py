@@ -154,7 +154,7 @@ class PhaseSpace(LinacOptData):
         self.particle_file = os.path.join(os.getcwd(), particle_file)
         self._min_pars = min_pars
 
-        super(PhaseSpace, self).__init__(particle_type)
+        super().__init__(particle_type)
 
         self.charge = charge
         self.q_norm = q_norm
@@ -483,9 +483,9 @@ class PhaseSpace(LinacOptData):
         """Print the beam parameters into a file."""
         output = os.path.join(os.path.dirname(self.particle_file), file_name)
         with open(output, 'wb') as f:
-            print >>f, self
+            print(self, file=f)
             
-        print("Saved parameters at {}".format(file_name))
+        print(("Saved parameters at {}".format(file_name)))
 
     def __str__(self):
         """"""
@@ -623,8 +623,8 @@ class PhaseSpaceParser(object):
 
 if __name__ == "__main__":
     ps_astra = PhaseSpace('examples/plots/injector.0400.001', 'astra')
-    print '-'*80 + "\nParameters for {}:\n".format(ps_astra.particle_file)
-    print ps_astra
+    print('-'*80 + "\nParameters for {}:\n".format(ps_astra.particle_file))
+    print(ps_astra)
     ps_astra.output_params()
 
     ps_impact = PhaseSpace('examples/plots/fort.140', 'impact',
@@ -633,5 +633,5 @@ if __name__ == "__main__":
                            slice_percent=0.1, min_pars=10,
                            slice_with_peak_current=True)
     ps_impact.update()
-    print '-'*80 + "\nParameters for {}:\n".format(ps_impact.particle_file)
-    print ps_impact
+    print('-'*80 + "\nParameters for {}:\n".format(ps_impact.particle_file))
+    print(ps_impact)

@@ -20,7 +20,7 @@ from linac_opt import LinacOpt
 
 def f1(fits):
     """Define objective - final bunch length"""
-    print "rms bunch length: {:.2f} fs".format(fits.out.St*1.e15)
+    print("rms bunch length: {:.2f} fs".format(fits.out.St*1.e15))
     return fits.out.St*1.e15
 
 
@@ -64,7 +64,7 @@ opt_test.set_optimizer('alpso')
 
 opt_test.optimizer.setOption('atol', 1e-2)
 opt_test.optimizer.setOption('rtol', 1e-2)
-opt_test.optimizer.setOption('SwarmSize', 100)
+opt_test.optimizer.setOption('SwarmSize', 80)
 opt_test.optimizer.setOption('maxOuterIter', 30)
 opt_test.optimizer.setOption('maxInnerIter', 3)  
 opt_test.optimizer.setOption('minInnerIter', 1)
@@ -130,7 +130,7 @@ opt_test.solve('mpirun -np 2 astra_r62_Linux_x86_64_OpenMPI_1.6.1', time_out=5)
 
 def f2(fits):
     """Define new objective"""
-    print (fits.out.emitx + fits.out.emitx)*1.e6/2
+    print((fits.out.emitx + fits.out.emitx)*1.e6/2)
     return (fits.out.emitx + fits.out.emitx)*1.e6/2
 
 # Change optimizer

@@ -3,22 +3,21 @@
 This is a basic example showing how to optimize the emittance in ASTRA
 with a local search optimizer.
 
-The solution is 0.141 at laser_spot = 0.040 and main_sole_b = 0.2815.
+The solution is 0.1543 at laser_spot = 0.040 and main_sole_b = 0.2750.
 """
 from linac_opt import LinacOpt
-
-# fits is a similar concept as the marker with FITPOINT=1 in ELEGANT
 
 
 def f1(fits):
     """Define objective - emittance
 
+    Fits is a similar concept as the marker with FITPOINT=1 in ELEGANT.
     The name of the first argument 'fits' is arbitrary, it can be 'x',
     'y' or any name else. The concept is similar to the marker with
     FITPOINT=1 in ELEGANT. One can use any attributes belong to the
     PhaseSpace class (see beam_parameters.py).
     """
-    print "Horizontal emittance: {:.4f} um".format(fits.out.emitx*1.e6)
+    print("Horizontal emittance: {:.4f} um".format(fits.out.emitx*1.e6))
     return fits.out.emitx*1.e6
 
 

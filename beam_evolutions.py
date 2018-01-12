@@ -89,7 +89,7 @@ class BeamEvolution(LinacOptData):
         """
         self.root_name = os.path.join(os.getcwd(), root_name)
 
-        super(BeamEvolution, self).__init__(particle_type)
+        super().__init__(particle_type)
 
         if z_lim is None:
             self.z_lim = (-1*INF, INF)
@@ -132,7 +132,7 @@ class BeamEvolution(LinacOptData):
 
         self.slice_data()
 
-        for key, value in self.__dict__.iteritems():
+        for key, value in self.__dict__.items():
             if isinstance(value, Stats):
                 value.update(self.data[key])
 
@@ -388,9 +388,8 @@ class Stats(object):
         text = "{:12}    {:12}    {:12}    {:12}    {:12}    {:12}\n".\
             format('start', 'end', 'minimum', 'maximum', 'average', 'std')
 
-        text += "{:12.4e}    {:12.4e}    {:12.4e}    {:12.4e}    {:12.4e}    " \
-                "{:12.4e}\n\n".format(self.start, self.end, self.min, self.max,
-                                      self.ave, self.std)
+        text += "{:12.4e}    {:12.4e}    {:12.4e}    {:12.4e}    {:12.4e}    {:12.4e}\n\n".\
+            format(self.start, self.end, self.min, self.max, self.ave, self.std)
 
         return text
 
@@ -417,9 +416,9 @@ class Stats(object):
 if __name__ == "__main__":
     # Test
     ld_astra = BeamEvolution('examples/astra_basic/injector', 'astra', z_lim=(4, 6))
-    print '-'*80 + "\nParameters for test ASTRA files"
-    print ld_astra
+    print('-'*80 + "\nParameters for test ASTRA files")
+    print(ld_astra)
 
     ld_impact = BeamEvolution('examples/impact_basic/fort', 'impact')
-    print '-'*80 + "\nParameters for test IMPACT files"
-    print ld_impact
+    print('-'*80 + "\nParameters for test IMPACT files")
+    print(ld_impact)

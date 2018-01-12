@@ -107,10 +107,6 @@ class PhaseSpacePlot(PhaseSpace):
         fig, ax = plt.subplots(figsize=figsize)
 
         ax.margins(AX_MARGIN)
-        ax.xaxis.set_major_locator(
-            ticker.MaxNLocator(MAX_LOCATOR, symmetric=False))
-        ax.yaxis.set_major_locator(
-            ticker.MaxNLocator(MAX_LOCATOR, symmetric=False))
 
         if x_unit is None:
             x_unit = default_unit(x)
@@ -128,6 +124,17 @@ class PhaseSpacePlot(PhaseSpace):
             x_sample /= phasespace.pz.iloc[i_sample]
         if y in ['xp', 'yp']:
             y_sample /= phasespace.pz.iloc[i_sample]
+
+        x_symmetric = False
+        y_symmetric = False
+        if x in ('x', 'xp'):
+            x_symmetric = True
+        if y in ('y', 'yp'):
+            y_symmetric = True
+        ax.xaxis.set_major_locator(ticker.MaxNLocator(nbins=MAX_LOCATOR,
+                                                      symmetric=x_symmetric))
+        ax.yaxis.set_major_locator(ticker.MaxNLocator(nbins=MAX_LOCATOR,
+                                                      symmetric=y_symmetric))
 
         if density_plot is False:
             ax.scatter(x_sample*x_scale, y_sample*y_scale, alpha=alpha,
@@ -166,7 +173,7 @@ class PhaseSpacePlot(PhaseSpace):
 
             ax1 = ax.twinx()
             ax1.margins(AX_MARGIN)
-            ax1.yaxis.set_major_locator(ticker.MaxNLocator(MAX_LOCATOR))
+            ax1.yaxis.set_major_locator(ticker.MaxNLocator(nbins=MAX_LOCATOR))
 
             y1_unit_label, y1_scale = unit_scale(y1_unit)
 
@@ -190,7 +197,7 @@ class PhaseSpacePlot(PhaseSpace):
         if output:
             image_file = os.path.join(os.path.dirname(self.particle_file), output)
             plt.savefig(image_file, dpi=dpi)
-            print(image_file + ' generated.')
+            print((image_file + ' generated.'))
         else:
             plt.show()
 
@@ -244,11 +251,11 @@ class PhaseSpacePlot(PhaseSpace):
         H_blurred = gaussian_filter(H, sigma=sigma)
 
         if len(x) > n:
-            i_sample = random.sample(range(len(x)), n)
+            i_sample = random.sample(list(range(len(x))), n)
             x_sample = x.iloc[i_sample]
             y_sample = y.iloc[i_sample]
         else:
-            i_sample = np.array(range(len(x)))
+            i_sample = np.array(list(range(len(x))))
             x_sample = x
             y_sample = y
 
@@ -339,8 +346,8 @@ class LinePlot(BeamEvolution):
                 ax.plot(line_data['z']*x_scale, line_data[names[i]]*y_scale,
                         c=colors[i], ls=styles[i], lw=2, label=name_labels[i])
             except KeyError as inst:
-                print("\nUnknown key: {}".format(inst))
-                print("\nValid keys ares: {}".format(line_data.columns.values))
+                print(("\nUnknown key: {}".format(inst)))
+                print(("\nValid keys ares: {}".format(line_data.columns.values)))
                 plt.close()  # Prevent showing failed plots afterwards
                 raise SystemExit
 
@@ -365,7 +372,7 @@ class LinePlot(BeamEvolution):
         if output:
             image_file = os.path.join(os.path.dirname(self.root_name), output)
             plt.savefig(image_file, dpi=dpi)
-            print(image_file + ' generated.')
+            print((image_file + ' generated.'))
         else:
             plt.show()
 
@@ -508,17 +515,14 @@ if __name__ == "__main__":
     # Test
     # psplot = PhaseSpacePlot('test/injector.0600.001', 'astra')
     psplot = PhaseSpacePlot('examples/plots/fort.140', 'impact', 3.1e-12, cut_tail=0.1)
-
-    print psplot
     psplot.plot('t', 'x', density_plot=False, alpha=0.5)
     psplot.plot('t', 'p')
     psplot.plot('x', 'xp', x_unit='um', density_plot=False)
     psplot.plot('x', 'xp', x_unit='um', output='x-xp.png')
 
     # lineplot = LinePlot('test/injector', 'astra')
-    lineplot = LinePlot('examples/plots/fort', 'impact')
-    #
-    lineplot.plot('Sz')
-    lineplot.plot(['betax', 'betay'], output='betaxy.png')
-    lineplot.plot(['Sx', 'Sy'], colors=('red', 'blue'), styles=(':', '-.'))
-    lineplot.plot(['Sx', 'Sy'], x_lim=[30, 31], y_lim=(0, 0.25))
+    # lineplot = LinePlot('examples/plots/fort', 'impact')
+    # lineplot.plot('Sz')
+    # lineplot.plot(['betax', 'betay'], output='betaxy.png')
+    # lineplot.plot(['Sx', 'Sy'], colors=('red', 'blue'), styles=(':', '-.'))
+    # lineplot.plot(['Sx', 'Sy'], x_lim=[30, 31], y_lim=(0, 0.25))
