@@ -12,8 +12,8 @@ An object-oriented Python API for beam dynamics optimization with ASTRA and IMPA
 
 ## Dependencies
 
-- Python3 > 3.5
-- [pyOpt](http://www.pyopt.org/) > 1.2.0
+- Python3 >= 3.5
+- [pyOpt](http://www.pyopt.org/) >= 1.2.0
 - [ASTRA](http://www.desy.de/~mpyflo/)
 - [IMPACT-T](http://portal.nersc.gov/project/m669/IMPACT-T/)
 
