@@ -23,7 +23,7 @@ import os
 import numpy as np
 import pandas as pd
 
-from linacopt_data import LinacOptData
+from . import BeamData
 
 V_LIGHT = 299792458
 M_E = 9.10938356e-31
@@ -33,7 +33,7 @@ CONST_E = M_E*V_LIGHT**2/Q_E
 INF = 1.0e21
 
 
-class PhaseSpace(LinacOptData):
+class PhaseSpace(BeamData):
     """Store the particle phase-space data and parameters
 
     Attributes
@@ -482,7 +482,7 @@ class PhaseSpace(LinacOptData):
     def output_params(self, file_name='params.out'):
         """Print the beam parameters into a file."""
         output = os.path.join(os.path.dirname(self.particle_file), file_name)
-        with open(output, 'wb') as f:
+        with open(output, 'w') as f:
             print(self, file=f)
             
         print(("Saved parameters at {}".format(file_name)))
@@ -622,16 +622,17 @@ class PhaseSpaceParser(object):
 
 
 if __name__ == "__main__":
-    ps_astra = PhaseSpace('examples/plots/injector.0400.001', 'astra')
+    # ps_astra = PhaseSpace('examples/plots/injector.0400.001', 'astra')
+    ps_astra = PhaseSpace('examples/astra_advanced/injector.0620.001', 'astra')
     print('-'*80 + "\nParameters for {}:\n".format(ps_astra.particle_file))
     print(ps_astra)
     ps_astra.output_params()
 
-    ps_impact = PhaseSpace('examples/plots/fort.140', 'impact',
-                           charge=17.7e-12, q_norm=None, cut_tail=0.0, rotate=0.0,
-                           cut_halo=0.0, current_bins='auto', filter_size=1,
-                           slice_percent=0.1, min_pars=10,
-                           slice_with_peak_current=True)
-    ps_impact.update()
-    print('-'*80 + "\nParameters for {}:\n".format(ps_impact.particle_file))
-    print(ps_impact)
+    # ps_impact = PhaseSpace('examples/plots/fort.140', 'impact',
+    #                        charge=17.7e-12, q_norm=None, cut_tail=0.0, rotate=0.0,
+    #                        cut_halo=0.0, current_bins='auto', filter_size=1,
+    #                        slice_percent=0.1, min_pars=10,
+    #                        slice_with_peak_current=True)
+    # ps_impact.update()
+    # print('-'*80 + "\nParameters for {}:\n".format(ps_impact.particle_file))
+    # print(ps_impact)

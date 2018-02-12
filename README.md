@@ -13,33 +13,29 @@ An object-oriented Python API for beam dynamics optimization with ASTRA and IMPA
 ## Dependencies
 
 - Python3 > 3.5
-- NumPy, Pandas, Scipy, matplotlib (only for visualization)
-- psutil
 - [pyOpt](http://www.pyopt.org/) > 1.2.0
 - [ASTRA](http://www.desy.de/~mpyflo/)
 - [IMPACT-T](http://portal.nersc.gov/project/m669/IMPACT-T/)
 
 ## Installation
 
-### Ubuntu
 - Download and install pyOpt
 ```sh
 $ git clone https://github.com/zhujun98/pyOpt
+$ cd pyOpt
 $ python setup.py install
 ```
 
-- Download LinacOpt
+- Download and install LinacOpt
 ```sh
-$ git clone http://github.com/zhujun98/LinacOpt.git
+$ git clone http://github.com/zhujun98/linacopt.git
+$ cd linacopt
+$ python setup.py install
 ```
-- Add a line **export PYTHONPATH=your/path/for/linac_opt:$PYTHONPATH** to ~/.profile
+For parallel version
 ```sh
-source ~/.profile
+$ sudo pip3 install mpi4py
 ```
-
-### Windows
-
-### MacOS
 
 
 ## Optimizers
@@ -64,5 +60,13 @@ source ~/.profile
 - Be careful about the number of grids (e.g. nrad and nlong_in in ASTRA)!!! For example, when you are optimizing the emittance of a gun, the optimizer may go over the working point with a very small laser spot size. If the number of grids is too small, it may underestimate the space-charge effects. However, the thermal emittance decreases as the laser spot size decreases. Therefore, if you do not have enough grids, you may get the wrong result in this case. My experience is that the longitudinal grid number is more important.
 
 - The parallel version of ASTRA will be stuck at some crazy working points where a lot of particles are lost. I set a 'time_out' parameter which will kill the simulation after a certain time (the optimization will continue). The default value of 'time_out' is 1200 s.
+
+
+## Uninstall
+
+```sh
+$ python setup.py install --record files.txt
+$ cat files.txt | xargs rm -rf
+```
 
 

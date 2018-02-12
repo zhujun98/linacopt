@@ -21,13 +21,12 @@ import re
 import random
 
 import numpy as np
-import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from scipy.ndimage.filters import gaussian_filter
 
-from beam_parameters import PhaseSpace
-from beam_evolutions import BeamEvolution
+from ..data_processing import PhaseSpace
+from ..data_processing import BeamEvolution
 
 
 LABEL_FONT_SIZE = 26

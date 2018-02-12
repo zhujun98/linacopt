@@ -6,7 +6,7 @@ in IMPACT-T with a local search optimizer.
 
 It should end up with Sx = 0.0486 mm, Sy = 0.2998 mm.
 """
-from linac_opt import LinacOpt
+from linacopt import LinacOpt
 
 
 def f1(fits):
@@ -47,7 +47,6 @@ matchin_opt.opt_prob.set_var('MQZM1_G', value=0, lower=-12.0, upper=12.0)
 matchin_opt.opt_prob.set_var('MQZM2_G', value=0, lower=-12.0, upper=12.0)
 
 # Run the optimization
-# matchin_opt.solve('ImpactTv1.7linux')
-matchin_opt.opt_prob.set_staticvar('n_col', 2)
+matchin_opt.opt_prob.set_staticvar('n_col', 1)
 matchin_opt.opt_prob.set_staticvar('n_row', 1)
 matchin_opt.solve('mpirun -np 2 ImpactTv1.7linuxPara')

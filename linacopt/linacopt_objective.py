@@ -17,11 +17,9 @@ class Objective(pyOptObjective):
     def __init__(self, name, func=None, optimum=-1.0e21):
         """Initialize Objective object
 
-        Parameters
-        ----------
-        func: function object
+        :param func: function object
             Objective function.
-        optimum: None/float
+        :param optimum: None/float
             The object of the objective.
         """
         if not callable(func):

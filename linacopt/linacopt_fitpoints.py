@@ -7,7 +7,7 @@ Author: Jun Zhu
 """
 import os
 
-from beam_parameters import PhaseSpace
+from .data_processing import PhaseSpace
 
 
 class FitPoints(object):
@@ -18,13 +18,11 @@ class FitPoints(object):
     def set_point(self, name, particle_file, particle_type=None, **kwargs):
         """Add a PhaseSpace object as an attribute
 
-        Parameters
-        ----------
-        name: string
+        :param name: string
             Name of the new attribute.
-        particle_file: string
+        :param particle_file: string
             Name of the particle file.
-        particle_type: string
+        :param particle_type: string
             Type of the particle file.
 
         Additional keyword arguments are passed to PhaseSpace.__init__()
@@ -44,9 +42,7 @@ class FitPoints(object):
     def del_point(self, name):
         """Delete a point by name.
 
-        Parameters
-        ----------
-        name: string
+        :param name: string
             Name of the new attribute.
         """
         super().__delattr__(name)

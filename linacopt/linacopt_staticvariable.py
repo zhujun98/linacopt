@@ -16,11 +16,9 @@ class StaticVariable(object):
     def __init__(self, name, value=None):
         """Initialize StaticVariable object
 
-        Parameters
-        ----------
-        name: string
+        :param name: string
             Name of the static variable.
-        value: int/float
+        :param value: int/float
             Value of the static variable. The value will be ignored
             if a variable with the same name is found in the variable
             set or co-variable set of the solution.

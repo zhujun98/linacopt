@@ -15,15 +15,13 @@ class CoVariable(object):
         The value of the variable is calculated by:
         covar = [slope].*[value of var_dp] + intercept
 
-        Parameters
-        ----------
-        name: string
+        :param name: string
             Name of the co-variable.
-        var_dp: string/list
+        :param var_dp: string/list
             Name(s) of the dependent variable(s).
-        slope: int/float/list
+        :param slope: int/float/list
             Coefficient(s) in calculation.
-        intercept: int/float
+        :param intercept: int/float
             Coefficient in calculation.
         """
         self.name = name

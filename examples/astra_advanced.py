@@ -6,10 +6,8 @@ is used in the first step and the local search optimizer SDPEN is used
 in the second one. Space-charge is switched off for speed.
 
 Several advanced setups are also shown here.
-
-The solution in the first step should be smaller than 0.1 fs!!!
 """
-from linac_opt import LinacOpt
+from linacopt import LinacOpt
 
 
 # ******************************Step 1*********************************
@@ -60,7 +58,7 @@ opt_test = LinacOpt(path_name='./astra_advanced',
                     max_fail=100)
 
 # Set up the optimizer
-opt_test.set_optimizer('alpso')
+opt_test.set_optimizer('alpso', pll_type='SPM')
 
 opt_test.optimizer.setOption('atol', 1e-2)
 opt_test.optimizer.setOption('rtol', 1e-2)
@@ -101,14 +99,14 @@ opt_test.opt_prob.set_var('tws1_sole_b', lower=0.0, upper=0.1)
 opt_test.opt_prob.set_var('gun_phase', lower=-30.0, upper=30.0)
 opt_test.opt_prob.set_var('tws1_phase', lower=-90.0, upper=0.0)
 opt_test.opt_prob.set_var('tws2_phase', lower=-90.0, upper=0.0)
-opt_test.opt_prob.set_var('gun_gradient', lower=0.0, upper=110.0)
-opt_test.opt_prob.set_var('tws1_gradient', lower=0.0, upper=30.0)
-opt_test.opt_prob.set_var('tws2_gradient', lower=0.0, upper=30.0)
 
 # co-variables
 opt_test.opt_prob.set_covar('tws2_sole_b', 'tws1_sole_b', 1.0, 0.0)
 
 # static-variables
+opt_test.opt_prob.set_staticvar('gun_gradient', 110)
+opt_test.opt_prob.set_staticvar('tws1_gradient', 30.0)
+opt_test.opt_prob.set_staticvar('tws2_gradient', 30.0)
 opt_test.opt_prob.set_staticvar('charge', 0.010)
 opt_test.opt_prob.set_staticvar('hmax', 0.005)
 opt_test.opt_prob.set_staticvar('hmin', 0.00005)
@@ -122,7 +120,8 @@ opt_test.opt_prob.set_staticvar('nlong', 32)
 # (assuming usually one iteration takes 3 seconds). However, the
 # optimization will continue. Both the shell command and the time_out
 # will be inherited by the following optimizations.
-opt_test.solve('mpirun -np 2 astra_r62_Linux_x86_64_OpenMPI_1.6.1', time_out=5)
+# opt_test.solve('astra')
+opt_test.solve('mpirun -np 2 astra_r62_Linux_x86_64_OpenMPI_1.6.1')
 
 
 # ******************************Step 2*********************************
@@ -130,7 +129,7 @@ opt_test.solve('mpirun -np 2 astra_r62_Linux_x86_64_OpenMPI_1.6.1', time_out=5)
 
 def f2(fits):
     """Define new objective"""
-    print((fits.out.emitx + fits.out.emitx)*1.e6/2)
+    print("Transverse emittance: {}".format((fits.out.emitx + fits.out.emitx)*1.0e6/2))
     return (fits.out.emitx + fits.out.emitx)*1.e6/2
 
 # Change optimizer
@@ -154,9 +153,6 @@ opt_test.opt_prob.set_con('St_fs', f1, upper=0.1)
 opt_test.opt_prob.set_staticvar('gun_phase')
 opt_test.opt_prob.set_staticvar('tws1_phase')
 opt_test.opt_prob.set_staticvar('tws2_phase')
-opt_test.opt_prob.set_staticvar('gun_gradient')
-opt_test.opt_prob.set_staticvar('tws1_gradient')
-opt_test.opt_prob.set_staticvar('tws2_gradient')
 
 # Run the local search optimization
 opt_test.solve()

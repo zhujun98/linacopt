@@ -9,7 +9,7 @@ from abc import ABC
 import re
 
 
-class LinacOptData(ABC):
+class BeamData(ABC):
     """Data object used in linacopt optimizer"""
     def __init__(self, particle_type=None):
         """"""

@@ -23,17 +23,15 @@ class Constraint(pyOptConstraint):
     def __init__(self, name, func=None, **kwargs):
         """Initialize Constraint object.
 
-        Parameters
-        ----------
-        func: function object
+        :param func: function object
             Name of the constraint function.
-        upper: float
+        :param upper: float
             Upper boundary, ignored if lower if specified.
-        lower: float
+        :param lower: float
             Lower boundary.
-        equal: float
+        :param equal: float
             Equal boundary.
-        tol: float
+        :param tol: float
             Tolerance for equal boundary; negative number for percent,
             positive number for absolute value.
 

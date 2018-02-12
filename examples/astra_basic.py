@@ -5,7 +5,7 @@ with a local search optimizer.
 
 The solution is 0.1543 at laser_spot = 0.040 and main_sole_b = 0.2750.
 """
-from linac_opt import LinacOpt
+from linacopt import LinacOpt
 
 
 def f1(fits):

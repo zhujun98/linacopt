@@ -13,16 +13,14 @@ class Variable(pyOptVariable):
     def __init__(self, name, **kwargs):
         """Initialize Constraint object.
 
-        Parameters
-        ----------
-        type: string
+        :param type: string
             Variable Type ('c'-continuous, 'i'-integer, 'd'-discrete),
             *Default* = 'c'
-        value: int/float
+        :param value: int/float
             Variable Value, *Default* = 0.0
-        upper: int/float
+        :param upper: int/float
             Upper boundary.
-        lower: int/float
+        :param lower: int/float
             Lower boundary.
         """
         super().__init__(name, **kwargs)

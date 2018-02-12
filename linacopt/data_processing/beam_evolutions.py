@@ -29,7 +29,7 @@ import os
 import numpy as np
 import pandas as pd
 
-from linacopt_data import LinacOptData
+from . import BeamData
 
 
 V_LIGHT = 299792458
@@ -40,7 +40,7 @@ CONST_E = M_E*V_LIGHT**2/Q_E
 INF = 1.0e21
 
 
-class BeamEvolution(LinacOptData):
+class BeamEvolution(BeamData):
     """Store the beam evolution and its statistics
 
     Attributes
@@ -71,18 +71,16 @@ class BeamEvolution(LinacOptData):
     def __init__(self, root_name, particle_type, z_lim=None, opt=False):
         """Initialize BeamStats object
 
-        Parameters
-        ----------
-        root_name: string
+        :param root_name: string
             The root name of the output files. For Impact-T files,
             root_name will be set to 'fort' if not given.
-        particle_type: string
+        :param particle_type: string
             Type of the particle file.
-        z_lim: scalar/tuple
+        :param z_lim: scalar/tuple
             If None, passed as (-INF, INF)
             if scalar, being passed as (left, INF)
             if tuple, the first two elements being passed as (left, right)
-        opt: Boolean
+        :param opt: Boolean
             True for the initialization of the fit-points in linac_opt.
             Since there is no output, an error will occur if the update
             method is called. Default is False.
@@ -396,9 +394,7 @@ class Stats(object):
     def update(self, data):
         """Update attributes
 
-        Parameter
-        ---------
-        data: array-like
+        :param data: array-like
             Input data.
         """
         data = np.asarray(data)

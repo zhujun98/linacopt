@@ -1,3 +1,6 @@
+build
+dist
+linacopt.egg-info
 .idea
 *.pyc
 .ipynb_checkpoints/*
@@ -18,6 +21,7 @@ examples/astra_advanced/*
 !examples/astra_advanced/sole_gun.dat
 !examples/astra_advanced/sole_cavity.dat
 !examples/astra_advanced/tws_cavity.dat
-examples/plots/*.png
+examples/plots/*
+!examples/plots/fort*
 win_config.dat
 .Rhistory

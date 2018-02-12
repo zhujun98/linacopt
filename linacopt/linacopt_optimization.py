@@ -5,13 +5,13 @@
 Author: Jun Zhu
 
 """
-from linacopt_variable import Variable
-from linacopt_covariable import CoVariable
-from linacopt_staticvariable import StaticVariable
-from linacopt_objective import Objective
-from linacopt_constraint import Constraint
-
 import pyOpt
+
+from .linacopt_objective import Objective
+from .linacopt_constraint import Constraint
+from .linacopt_variable import Variable
+from .linacopt_covariable import CoVariable
+from .linacopt_staticvariable import StaticVariable
 
 
 class Optimization(pyOpt.Optimization):
@@ -41,8 +41,8 @@ class Optimization(pyOpt.Optimization):
     def del_obj(self, ix):
         """Delete the objective *ix* from the objective set
 
-        arguments:
-        - ix -> int/string: index (if int) or name (if string)
+        :param ix: int/string
+            Index (if int) or name (if string)
         """
         index = -1
         if isinstance(ix, int):
@@ -83,8 +83,8 @@ class Optimization(pyOpt.Optimization):
     def del_con(self, ix):
         """Delete the constraint *ix* from the constraint set
 
-        arguments:
-        - ix -> int/string: index (if int) or name (if string)
+        :param ix: int/string
+            Index (if int) or name (if string)
         """
         index = -1
         if isinstance(ix, int):
@@ -143,8 +143,8 @@ class Optimization(pyOpt.Optimization):
     def del_var(self, ix):
         """Delete the variable *ix* from the variable set
 
-        arguments:
-        - ix -> int/string: index (if int) or name (if string)
+        :param ix: int/string
+            Index (if int) or name (if string)
         """
         index = -1
         if isinstance(ix, int):
@@ -205,8 +205,8 @@ class Optimization(pyOpt.Optimization):
     def del_covar(self, ix):
         """Delete the co-variable *ix* from the co-variable set
 
-        arguments:
-        - ix -> int/string: index (if int) or name (if string)
+        :param ix: int/string
+            Index (if int) or name (if string)
         """
         index = -1
         if isinstance(ix, int):
@@ -269,8 +269,8 @@ class Optimization(pyOpt.Optimization):
     def del_staticvar(self, ix):
         """Delete static variable *ix* from the static variable set
 
-        arguments:
-        - ix -> int/string: index (if int) or name (if string)
+        :param ix: int/string
+            Index (if int) or name (if string)
         """
         index = -1
         if isinstance(ix, int):

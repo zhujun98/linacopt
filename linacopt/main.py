@@ -41,18 +41,18 @@ from datetime import datetime
 
 import pyOpt
 
-from linacopt_optimization import Optimization
-from linacopt_fitpoints import FitPoints
-from linacopt_sections import Sections
-from linacopt_data import LinacOptData
-from beam_parameters import PhaseSpace
-from beam_evolutions import BeamEvolution
+from .data_processing import BeamData
+from .data_processing import PhaseSpace
+from .data_processing import BeamEvolution
+from .linacopt_optimization import Optimization
+from .linacopt_fitpoints import FitPoints
+from .linacopt_sections import Sections
 
 
 INF = 1.0e21
 
 
-class LinacOpt(LinacOptData):
+class LinacOpt(BeamData):
     """LinacOpt class.
 
     Attributes
@@ -201,9 +201,7 @@ class LinacOpt(LinacOptData):
     def optimizer(self, name):
         """Property optimizer setter.
 
-        Parameters
-        ----------
-        name: string
+        :param name: string
             Name of the optimizer.
         """
         if re.search(r'^sdpen', name, re.IGNORECASE):
@@ -223,26 +221,24 @@ class LinacOpt(LinacOptData):
         else:
             raise ValueError("Unknown optimizer!\n")
 
-    def set_optimizer(self, name):
+    def set_optimizer(self, name, pll_type=None):
         """Set the optimizer.
 
-        Parameters
-        ----------
-        name: string
+        :param name: string
             Name of the optimizer.
+        :param pll_type: String/None
+            Type of parallelization.
         """
         self.optimizer = name
 
     def solve(self, run_code=None, time_out=None, complete_shell=None):
         """Run the optimization and print the result.
 
-        Parameters
-        ----------
-        run_code: None/string
+        :param run_code: None/string
             String that can run the code in the shell.
-        time_out: None/float/int
+        :param time_out: None/float/int
             Maximum allowed run time (in s) of one simulation.
-        complete_shell: None/Boolean
+        :param complete_shell: None/Boolean
             If True, the shell will only execute the string 'run_code',
             which means the input file and the time_out will be ignored.
         """
@@ -365,9 +361,7 @@ class LinacOpt(LinacOptData):
     def obj_func(self, x):
         """Objective function.
 
-        Parameters
-        ----------
-        x: array-like
+        :param x: array-like
             Variables updated after each iteration.
         """
         self._n_iter += 1

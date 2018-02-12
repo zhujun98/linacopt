@@ -4,16 +4,12 @@
 def quad_k2g(k, p):
     """Convert the K value of a quadrupole to gradient.
 
-    Parameters
-    ----------
-    k: float
+    :param k: float
         Quadrupole strength (1/m^2)
-    p: float
+    :param p: float
         Normalized momentum
 
-    Returns
-    -------
-    Quadrupole gradient (T/m)
+    :returns Quadrupole gradient (T/m)
     """
     me = 9.10938291e-31
     v_light = 299792458

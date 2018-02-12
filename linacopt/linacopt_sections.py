@@ -7,7 +7,7 @@ Author: Jun Zhu
 """
 import os
 
-from beam_evolutions import BeamEvolution
+from .data_processing import BeamEvolution
 
 
 class Sections(object):
@@ -19,13 +19,11 @@ class Sections(object):
     def set_section(self, name, root_name=None, particle_type=None, **kwargs):
         """Add a BeamEvolution object as an attribute
 
-        Parameters
-        ----------
-        name: string
+        :param name: string
             Name of the new attribute.
-        root_name: string
+        :param root_name: string
             The root name of the output files.
-        particle_type: string
+        :param particle_type: string
             Type of the particle file.
 
         Additional keyword arguments are passed to BeamEvolution.__init__().
@@ -48,9 +46,7 @@ class Sections(object):
     def del_section(self, name):
         """Delete a section by name.
 
-        Parameters
-        ----------
-        name: string
+        :param name: string
             Name of the new attribute.
         """
         super().__delattr__(name)
