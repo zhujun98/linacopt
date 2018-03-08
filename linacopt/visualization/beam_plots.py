@@ -156,36 +156,38 @@ class PhaseSpacePlot(PhaseSpace):
                       fontsize=LABEL_FONT_SIZE, labelpad=LABEL_PAD)
         ax.tick_params(labelsize=TICK_FONT_SIZE, pad=TICK_PAD)
 
-        if (x, y) == ('x', 'xp') and special is True:
-            plt.title(r'$\varepsilon_x$ = %s $\mu$m' %
-                      float("%.2g" % (self.emitx*1e6)),
-                      fontsize=TITLE_FONT_SIZE, y=1.02)
-
-        if (x, y) == ('y', 'yp') and special is True:
-            plt.title(r'$\varepsilon_y$ = %s $\mu$m' %
-                      float("%.2g" % (self.emity*1e6)),
-                      fontsize=TITLE_FONT_SIZE, y=1.02)
-
-        if (x, y) == ('t', 'p') and special is True:
-            if not y1_unit:
-                y1_unit = 'A'
-
-            ax1 = ax.twinx()
-            ax1.margins(AX_MARGIN)
-            ax1.yaxis.set_major_locator(ticker.MaxNLocator(nbins=MAX_LOCATOR))
-
-            y1_unit_label, y1_scale = unit_scale(y1_unit)
-
-            ax1.plot(self.current_dist[0]*x_scale, self.current_dist[1]*y1_scale, ls='--',
-                     lw=2, color='indigo')
-            ax1.set_ylabel("$I$ " + y1_unit_label, fontsize=LABEL_FONT_SIZE, labelpad=LABEL_PAD)
-            ax1.tick_params(labelsize=TICK_FONT_SIZE)
-
-            plt.title(r"$\sigma_t$ = %s " % float("%.2g" % (self.St*x_scale))
-                      + x_unit_label.replace('(', '').replace(')', '')
-                      + r", $\sigma_\delta$ = %s " % float("%.2g" % self.Sdelta)
-                      + r", $Q$ = %s pC" % float("%.2g" % (self.charge*1e12)),
-                      fontsize=TITLE_FONT_SIZE, y=1.02)
+        plt.title(' ', fontsize=TITLE_FONT_SIZE, y=1.02)  # placeholder
+        if special is True:
+            if (x, y) == ('x', 'xp'):
+                plt.title(r'$\varepsilon_x$ = %s $\mu$m' %
+                          float("%.2g" % (self.emitx*1e6)),
+                          fontsize=TITLE_FONT_SIZE, y=1.02)
+    
+            elif (x, y) == ('y', 'yp'):
+                plt.title(r'$\varepsilon_y$ = %s $\mu$m' %
+                          float("%.2g" % (self.emity*1e6)),
+                          fontsize=TITLE_FONT_SIZE, y=1.02)
+    
+            elif (x, y) == ('t', 'p'):
+                if not y1_unit:
+                    y1_unit = 'A'
+    
+                ax1 = ax.twinx()
+                ax1.margins(AX_MARGIN)
+                ax1.yaxis.set_major_locator(ticker.MaxNLocator(nbins=MAX_LOCATOR))
+    
+                y1_unit_label, y1_scale = unit_scale(y1_unit)
+    
+                ax1.plot(self.current_dist[0]*x_scale, self.current_dist[1]*y1_scale, ls='--',
+                         lw=2, color='indigo')
+                ax1.set_ylabel("$I$ " + y1_unit_label, fontsize=LABEL_FONT_SIZE, labelpad=LABEL_PAD)
+                ax1.tick_params(labelsize=TICK_FONT_SIZE)
+    
+                plt.title(r"$\sigma_t$ = %s " % float("%.2g" % (self.St*x_scale))
+                          + x_unit_label.replace('(', '').replace(')', '')
+                          + r", $\sigma_\delta$ = %s " % float("%.2g" % self.Sdelta)
+                          + r", $Q$ = %s pC" % float("%.2g" % (self.charge*1e12)),
+                          fontsize=TITLE_FONT_SIZE, y=1.02)
 
         if x_lim is not None:
             ax.set_xlim(x_lim)
