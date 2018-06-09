@@ -4,6 +4,8 @@ Jun Zhu
 
 ---
 
+**You can find the next generation of optimization tool at https://github.com/zhujun98/liso**
+
 ## Introduction
 
 An object-oriented Python API for beam dynamics optimization with ASTRA and IMPACT-T.
